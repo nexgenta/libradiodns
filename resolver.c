@@ -80,7 +80,7 @@ radiodns_resolve_target(radiodns_t *context)
 	    {
 	      continue;
 	    }
-	  if(ns_rr_type(rr) == ns_t_dname || ns_t_cname)
+	  if(ns_rr_type(rr) == ns_t_dname || ns_rr_type(rr) == ns_t_cname)
 	    {
 	      dn_expand(ns_msg_base(handle), ns_msg_base(handle) + ns_msg_size(handle), ns_rr_rdata(rr), dnbuf, sizeof(dnbuf));
 	    }
