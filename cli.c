@@ -189,6 +189,42 @@ main(int argc, char **argv)
 			context = radiodns_create_dab(scids, sid, eid, ecc, suffix);
 		}			
 	}
+	else if(!strncmp(argv[1], "drm", strlen(argv[1])))
+	{
+		if(argc < 3 || argc > 4)
+		{
+			usage(argv[0]);
+		}
+		sid = strtol(argv[2], &endptr, 0);
+		if(endptr && endptr[0])
+		{
+			fprintf(stderr, "%s: error parsing SID at '%s'\n", argv[0], endptr);
+			usage(argv[0]);
+		}
+		if(argc == 4)
+		{
+			suffix = argv[3];
+		}
+		context = radiodns_create_drm(sid, suffix);
+	}
+	else if(!strncmp(argv[1], "amss", strlen(argv[1])))
+	{
+		if(argc < 3 || argc > 4)
+		{
+			usage(argv[0]);
+		}
+		sid = strtol(argv[2], &endptr, 0);
+		if(endptr && endptr[0])
+		{
+			fprintf(stderr, "%s: error parsing SID at '%s'\n", argv[0], endptr);
+			usage(argv[0]);
+		}
+		if(argc == 4)
+		{
+			suffix = argv[3];
+		}
+		context = radiodns_create_amss(sid, suffix);
+	}
 	else if(!strncmp(argv[1], "dvb", strlen(argv[1])))
 	{
 		if(argc < 6 || argc > 7)
