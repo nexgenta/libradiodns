@@ -1,0 +1,46 @@
+RadioDNS client library
+=======================
+
+This is a simple client library for RadioDNS.
+
+The public interface is in libradiodns.h. Much of it should be fairly
+self-explanatory: you create a context using one of the radiodns_create()
+family of functions, which either uses the specified domain name (in
+the case of radiodns_create() itself) or constructs one based on
+supplied parameters (in the case of the other functions in the family).
+
+One a context has been created, you can use radiodns_resolve_target() to
+find the target domain name beneath which SRV records will be looked for.
+
+At any point you can call radiodns_domain() or radiodns_target() to query
+the current (initial) domain name or target domain name. If
+radiodns_resolve_target() has yet to be called or failed catastrophically,
+radiodns_target() will return NULL.
+
+Note that everything is synchronous: anything with 'resolve' in the name
+will perform one or more DNS queries and block until complete. Usual
+cautions regarding UI threads and networking apply.
+
+Once you're finished with a context, you should use radiodns_destroy()
+to free up the resources associated with it.
+
+Accompanying the library is a command-line utility, currently named
+'radiodns' which allows testing. Run the utility without any parameters
+for a usage summary. Any numerical values used as parameters can be
+specified in decimal as-is, in hexadecimal with a '0x' prefix, or octal
+with a '0' prefix.
+
+For example, Capital FM in London:
+
+$ ./radiodns fm 9580 0xc586 0xce1
+Domain: 09580.c586.ce1.fm.radiodns.org
+Target: rnds.musicradio.com
+
+Or BBC One in Bristol:
+
+$ ./radiodns dvb 0x233a 0x1041 0x10bf 0x3098
+Domain: 3098.10bf.1041.233a.dvb.tvdns.net
+Target: west.bbc.srv.tvdns.net
+
+At the moment, neither the library nor the command-line tool performs any
+queries for SRV records -- this is next on the to-do list.
