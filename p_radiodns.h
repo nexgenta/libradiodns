@@ -36,6 +36,10 @@
 #  define NETDB_INTERNAL                -1
 # endif
 
+# ifndef MAXDNAME
+#  define MAXDNAME                      1024
+# endif
+
 /* The maximum length of the components to the left of the "radiodns.org"
  * suffix in domain names.
  */
