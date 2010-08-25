@@ -44,3 +44,13 @@ Target: west.bbc.srv.tvdns.net
 
 At the moment, neither the library nor the command-line tool performs any
 queries for SRV records -- this is next on the to-do list.
+
+If you just want to find out what the application-discovery target of a given
+FQDN is, you can do:
+
+$ ./radiodns -target dns 09580.c586.ce1.fm.radiodns.org
+rnds.musicradio.com
+
+If no options such as -target or -domain are specified on the command-line,
+the utility behaves as though '-domain -target' were supplied, and defaults
+to being verbose unless '-quiet' is specified.

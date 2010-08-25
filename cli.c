@@ -89,10 +89,22 @@ usage()
 	}
 	else
 	{
-		fprintf(stderr, "Usage: %s KIND ARGS...\n", progname);
+		fprintf(stderr, "Usage: %s [OPTIONS] KIND ARGS...\n", progname);
 		fprintf(stderr, " KIND is one of 'dns', 'fm', 'dab', 'drm', amss', or 'hdradio'\n");
 		fprintf(stderr, " Unless otherwise stated, numeric values can be specified in decimal,\n"
-				" hexadecimal (with a '0x' prefix), or octal (with a '0' prefix).\n");
+				" hexadecimal (with a '0x' prefix), or octal (with a '0' prefix).\n\n");
+
+		fprintf(stderr, "OPTIONS can include any of the following flags:\n");
+		fprintf(stderr, " -quiet      Be quiet\n");
+		fprintf(stderr, " -verbose    Be verbose\n\n");
+
+		fprintf(stderr, "OPTIONS can also include any of the following commands:\n");
+		fprintf(stderr, " -target     Print the application-discovery target domain name.\n");
+		fprintf(stderr, " -domain     Print the source (constructed) domain name.\n\n");
+
+		fprintf(stderr, "If no OPTIONS are supplied, behaviour is as if -domain -target were\n");
+		fprintf(stderr, "specified on the command-line, and the 'verbose' flag is enabled unless\n");
+		fprintf(stderr, "-quiet is explicitly specified.\n");
 	}
 }
 
