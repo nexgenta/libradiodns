@@ -33,13 +33,18 @@
 static void
 usage(const char *progname)
 {
+	fprintf(stderr, "Usage: %s KIND ARGS...\n", progname);
+	fprintf(stderr, " KIND is one of 'domain', 'fm', 'dab', 'drm', amss', or 'hd'\n");
+	fprintf(stderr, " Unless otherwise stated, numeric values can be specified in decimal,\n"
+			" hexadecimal (with a '0x' prefix), or octal (with a '0' prefix).\n\n");
 	fprintf(stderr, "Usage: %s domain DOMAIN\n", progname);
 	fprintf(stderr, "Usage: %s fm FREQ PI COUNTRY [SUFFIX]\n", progname);
 	fprintf(stderr, " - FREQ is specified in units of 10KHz\n"
-			" - PI can be specified in decimal or hex (prefix with '0x')\n"
-			" - COUNTRY must be an ISO country code or an RDS ECC (decimal or hex)\n");
+			" - COUNTRY must be an ISO country code or an RDS ECC\n");
+	fprintf(stderr, "Usage: %s dab SCIDS SID EID ECC [APPTYPE-UATYPE | PA] [SUFFIX]\n", progname);
+	fprintf(stderr, " - APPTYPE-UATYPE must be specified in hexadecimal, with no prefix (e.g.,\n"
+			"   1F-3C5)\n");
 	fprintf(stderr, "Usage: %s dvb ONID TSID SID NID [SUFFIX]\n", progname);
-	fprintf(stderr, " - Each of ONID, TSID, SID and NID may be specified in either decimal or hex\n");
 	exit(EXIT_FAILURE);
 }
 
@@ -47,7 +52,7 @@ int
 main(int argc, char **argv)
 {
 	radiodns_t *context;
-	long freq, pi, onid, nid, sid, tsid, cval;
+	long freq, pi, onid, nid, sid, tsid, cval, scids, eid, ecc, apptype, uatype, pa;
 	const char *country, *suffix;
 	char cbuf[16];
 	char *endptr;
@@ -93,7 +98,6 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: error parsing COUNTRY at '%s'\n", argv[0], endptr);
 				usage(argv[0]);
 			}
-			printf("cval = %03x\n", cval);
 			sprintf(cbuf, "%03x", (int) cval);
 			country = cbuf;
 		}
@@ -106,6 +110,84 @@ main(int argc, char **argv)
 			suffix = argv[5];
 		}
 		context = radiodns_create_fm(freq, pi, country, suffix);
+	}
+	else if(!strncmp(argv[1], "dab", strlen(argv[1])))
+	{
+		if(argc < 6 || argc > 8)
+		{
+			usage(argv[0]);
+		}
+		scids = strtol(argv[2], &endptr, 0);
+		if(endptr && endptr[0])
+		{
+			fprintf(stderr, "%s: error parsing SCIDS at '%s'\n", argv[0], endptr);
+			usage(argv[0]);
+		}
+		sid = strtol(argv[3], &endptr, 0);
+		if(endptr && endptr[0])
+		{
+			fprintf(stderr, "%s: error parsing SID at '%s'\n", argv[0], endptr);
+			usage(argv[0]);
+		}
+		eid = strtol(argv[4], &endptr, 0);
+		if(endptr && endptr[0])
+		{
+			fprintf(stderr, "%s: error parsing EID at '%s'\n", argv[0], endptr);
+			usage(argv[0]);
+		}
+		ecc = strtol(argv[5], &endptr, 0);
+		if(endptr && endptr[0])
+		{
+			fprintf(stderr, "%s: error parsing ECC at '%s'\n", argv[0], endptr);
+			usage(argv[0]);
+		}
+		if(argc == 8)
+		{
+			suffix = argv[7];
+		}
+		if(argc >= 7)
+		{
+			if(strlen(argv[6]) <= 6 && strchr(argv[6], '-'))
+			{
+				/* APPTYPE-UATYPE */
+				apptype = strtol(argv[6], &endptr, 16);
+				if(!endptr || endptr[0] != '-')
+				{
+					fprintf(stderr, "%s: error parsing APPTYPE at '%s'\n", argv[0], endptr);
+					usage(argv[0]);
+				}
+				endptr++;
+				uatype = strtol(endptr, &endptr, 16);
+				if(endptr && endptr[0])
+				{
+					fprintf(stderr, "%s: error parsing UATYPE at '%s'\n", argv[0], endptr);
+					usage(argv[0]);
+				}
+				context = radiodns_create_dab_xpad(apptype, uatype, scids, sid, eid, ecc, suffix);
+			}
+			else
+			{
+				pa = strtol(argv[6], &endptr, 16);
+				if(endptr && endptr[0])
+				{
+					if(argc == 8)
+					{
+						fprintf(stderr, "%s: error parsing PA at '%s'\n", argv[0], endptr);
+						usage(argv[0]);
+					}
+					suffix = argv[6];
+					context = radiodns_create_dab(scids, sid, eid, ecc, suffix);
+				}
+				else
+				{
+					context = radiodns_create_dab_sc(pa, scids, sid, eid, ecc, suffix);
+				}
+			}
+		}
+		else
+		{
+			context = radiodns_create_dab(scids, sid, eid, ecc, suffix);
+		}			
 	}
 	else if(!strncmp(argv[1], "dvb", strlen(argv[1])))
 	{
