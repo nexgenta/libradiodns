@@ -44,6 +44,9 @@ usage(const char *progname)
 	fprintf(stderr, "Usage: %s dab SCIDS SID EID ECC [APPTYPE-UATYPE | PA] [SUFFIX]\n", progname);
 	fprintf(stderr, " - APPTYPE-UATYPE must be specified in hexadecimal, with no prefix (e.g.,\n"
 			"   1F-3C5)\n");
+	fprintf(stderr, "Usage: %s drm SID [SUFFIX]\n", progname);
+	fprintf(stderr, "Usage: %s amss SID [SUFFIX]\n", progname);
+	fprintf(stderr, "Usage: %s hdradio TX CC [SUFFIX]\n", progname);
 	fprintf(stderr, "Usage: %s dvb ONID TSID SID NID [SUFFIX]\n", progname);
 	exit(EXIT_FAILURE);
 }
@@ -52,7 +55,7 @@ int
 main(int argc, char **argv)
 {
 	radiodns_t *context;
-	long freq, pi, onid, nid, sid, tsid, cval, scids, eid, ecc, apptype, uatype, pa;
+	long freq, pi, onid, nid, sid, tsid, cval, scids, eid, ecc, apptype, uatype, pa, tx, cc;
 	const char *country, *suffix;
 	char cbuf[16];
 	char *endptr;
@@ -224,6 +227,30 @@ main(int argc, char **argv)
 			suffix = argv[3];
 		}
 		context = radiodns_create_amss(sid, suffix);
+	}
+	else if(!strncmp(argv[1], "hdradio", strlen(argv[1])))
+	{
+		if(argc < 4 || argc > 5)
+		{
+			usage(argv[0]);
+		}
+		tx = strtol(argv[2], &endptr, 0);
+		if(endptr && endptr[0])
+		{
+			fprintf(stderr, "%s: error parsing TX at '%s'\n", argv[0], endptr);
+			usage(argv[0]);
+		}
+		cc = strtol(argv[2], &endptr, 0);
+		if(endptr && endptr[0])
+		{
+			fprintf(stderr, "%s: error parsing CC at '%s'\n", argv[0], endptr);
+			usage(argv[0]);
+		}
+		if(argc == 5)
+		{
+			suffix = argv[4];
+		}
+		context = radiodns_create_hdradio(tx, cc, suffix);
 	}
 	else if(!strncmp(argv[1], "dvb", strlen(argv[1])))
 	{
