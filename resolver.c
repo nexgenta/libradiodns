@@ -112,7 +112,10 @@ radiodns_resolve_app(radiodns_t *context, const char *name, const char *protocol
 {
   if(!context->target)
     {
-      return NULL;
+      if(NULL == radiodns_resolve_target(context))
+	{
+	  return NULL;
+	}
     }
   
   return NULL;
