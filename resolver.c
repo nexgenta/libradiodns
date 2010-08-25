@@ -29,7 +29,7 @@
 const char *
 radiodns_resolve_target(radiodns_t *context)
 {
-	nt len, c;
+	int len, c;
 	ns_msg handle;
 	ns_rr rr;
 	char domain[MAXDNAME + 1], dnbuf[MAXDNAME + 1];
