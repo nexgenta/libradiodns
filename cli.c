@@ -26,6 +26,7 @@
 #include <string.h>
 #include <errno.h>
 #include <netdb.h>
+#include <ctype.h>
 
 #include "libradiodns.h"
 
@@ -36,7 +37,7 @@ usage(const char *progname)
   fprintf(stderr, "Usage: %s fm FREQ PI COUNTRY [SUFFIX]\n", progname);
   fprintf(stderr, " - FREQ is specified in units of 10KHz\n"
 	  " - PI can be specified in decimal or hex (prefix with '0x')\n"
-	  " - COUNTRY must be an ISO country code or an RDS ECC\n");
+	  " - COUNTRY must be an ISO country code or an RDS ECC (decimal or hex)\n");
   fprintf(stderr, "Usage: %s dvb ONID TSID SID NID [SUFFIX]\n", progname);
   fprintf(stderr, " - Each of ONID, TSID, SID and NID may be specified in either decimal or hex\n");
   exit(EXIT_FAILURE);
@@ -46,8 +47,9 @@ int
 main(int argc, char **argv)
 {
   radiodns_t *context;
-  long freq, pi, onid, nid, sid, tsid;
+  long freq, pi, onid, nid, sid, tsid, cval;
   const char *country, *suffix;
+  char cbuf[16];
   char *endptr;
 
   if(argc < 2)
@@ -83,7 +85,22 @@ main(int argc, char **argv)
 	  fprintf(stderr, "%s: error parsing PI at '%s'\n", argv[0], endptr);
 	  usage(argv[0]);
 	}
-      country = argv[4];
+      if(isdigit(argv[4][0]) || (argv[4][0] == '0' && argv[4][0] == 'x'))
+	{
+	  cval = strtol(argv[4], &endptr, 0);
+	  if(endptr && endptr[0])
+	    {
+	      fprintf(stderr, "%s: error parsing COUNTRY at '%s'\n", argv[0], endptr);
+	      usage(argv[0]);
+	    }
+	  printf("cval = %03x\n", cval);
+	  sprintf(cbuf, "%03x", (int) cval);
+	  country = cbuf;
+	}
+      else
+	{
+	  country = argv[4];
+	}
       if(argc == 5)
 	{
 	  suffix = argv[5];
