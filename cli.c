@@ -37,6 +37,8 @@ usage(const char *progname)
   fprintf(stderr, " - FREQ is specified in units of 10KHz\n"
 	  " - PI can be specified in decimal or hex (prefix with '0x')\n"
 	  " - COUNTRY must be an ISO country code or an RDS ECC\n");
+  fprintf(stderr, "Usage: %s dvb ONID TSID SID NID [SUFFIX]\n", progname);
+  fprintf(stderr, " - Each of ONID, TSID, SID and NID may be specified in either decimal or hex\n");
   exit(EXIT_FAILURE);
 }
 
@@ -44,7 +46,7 @@ int
 main(int argc, char **argv)
 {
   radiodns_t *context;
-  long freq, pi;
+  long freq, pi, onid, nid, sid, tsid;
   const char *country, *suffix;
   char *endptr;
 
@@ -87,6 +89,42 @@ main(int argc, char **argv)
 	  suffix = argv[5];
 	}
       context = radiodns_create_fm(freq, pi, country, suffix);
+    }
+  else if(!strncmp(argv[1], "dvb", strlen(argv[1])))
+    {
+      if(argc < 6 || argc > 7)
+	{
+	  usage(argv[0]);
+	}
+      onid = strtol(argv[2], &endptr, 0);
+      if(endptr && endptr[0])
+	{
+	  fprintf(stderr, "%s: error parsing ONID at '%s'\n", argv[0], endptr);
+	  usage(argv[0]);
+	}
+      tsid = strtol(argv[3], &endptr, 0);
+      if(endptr && endptr[0])
+	{
+	  fprintf(stderr, "%s: error parsing TSID at '%s'\n", argv[0], endptr);
+	  usage(argv[0]);
+	}
+      sid = strtol(argv[4], &endptr, 0);
+      if(endptr && endptr[0])
+	{
+	  fprintf(stderr, "%s: error parsing SID at '%s'\n", argv[0], endptr);
+	  usage(argv[0]);
+	}
+      nid = strtol(argv[5], &endptr, 0);
+      if(endptr && endptr[0])
+	{
+	  fprintf(stderr, "%s: error parsing NID at '%s'\n", argv[0], endptr);
+	  usage(argv[0]);
+	}
+      if(argc == 7)
+	{
+	  suffix = argv[6];
+	}
+      context = radiodns_create_dvb(onid, tsid, sid, nid, suffix);
     }
   else
     {
