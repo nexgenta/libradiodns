@@ -32,7 +32,7 @@ orig_LIBS="$LIBS"
 AC_CHECK_LIB([resolv],[res_query],[have_libresolv=yes])
 AC_CHECK_LIB([resolv],[__res_query],[have_libresolv=yes])
 
-if test x"$have_libresolv" = x"yes" ; then
+if test x"$have_libresolv" = x"yes" && test x"$host_os" = x"linux-gnu" ; then
    AC_CHECK_LIB([resolv],[ns_parserr],,[
      AC_CHECK_LIB([resolv],[__ns_parserr],,[glibc_resolver_hack=yes])
    ])
