@@ -102,7 +102,8 @@ usage()
 
 		fprintf(stderr, "OPTIONS can also include any of the following commands:\n");
 		fprintf(stderr, " -target     Print the application-discovery target domain name.\n");
-		fprintf(stderr, " -domain     Print the source (constructed) domain name.\n\n");
+		fprintf(stderr, " -domain     Print the source (constructed) domain name.\n");
+		fprintf(stderr, " -app NAME   Look for instances of _NAME._tcp within the target domain.\n\n");
 
 		fprintf(stderr, "If no OPTIONS are supplied, behaviour is as if -domain -target were\n");
 		fprintf(stderr, "specified on the command-line, and the 'verbose' flag is enabled unless\n");
