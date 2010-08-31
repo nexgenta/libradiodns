@@ -41,6 +41,7 @@ static int cmd_domain(int argc, char **argv);
 static int cmd_target(int argc, char **argv);
 static int cmd_verbose(int argc, char **argv);
 static int cmd_quiet(int argc, char **argv);
+static int cmd_app(int argc, char **argv);
 
 struct command {
 	const char *name;
@@ -65,6 +66,7 @@ static struct command commands[] = {
 	{ "domain", cmd_domain, 0, 0, 0, 1, NULL },
 	{ "verbose", cmd_verbose, 0, 0, 1, 1, NULL },
 	{ "quiet", cmd_quiet, 0, 0, 1, 1, NULL },
+	{ "app", cmd_app, 1, 0, 0, 1, "TYPE" },
 	{ NULL, NULL, 0, 0, 0, 0, NULL },
 };
 
@@ -398,7 +400,7 @@ cmd_dvb(int argc, char **argv)
 	char *endptr;
 	
 	suffix = NULL;
-	if(argc < 6 || argc > 7)
+	if(argc < 5 || argc > 6)
 	{
 		usage();
 		return 1;
@@ -492,6 +494,42 @@ cmd_quiet(int argc, char **argv)
 	return 0;
 }
 
+static int
+cmd_app(int argc, char **argv)
+{
+	radiodns_app_t *app, *p;
+	int c;
+
+	if(argc != 2)
+	{
+		usage();
+		return 1;
+	}
+	if(!(app = radiodns_resolve_app(context, argv[1], NULL)))
+	{
+		fprintf(stderr, "%s: no instances found\n", argv[1]);
+		return 1;
+	}
+	for(p = app; p; p = p->next)
+	{
+		if(p->name)
+		{
+			printf("Instance %s:\n", p->name);
+		}
+		else
+		{
+			printf("Instance (no name):\n");
+		}
+		printf("  %d service records.\n", p->nsrv);
+		for(c = 0; c < p->nsrv; c++)
+		{
+			printf("  IN SRV %d %d %d %s.\n", p->srv[c].priority, p->srv[c].weight, p->srv[c].port, p->srv[c].target);
+		}
+	}
+	radiodns_destroy_app(app);
+	return 0;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -550,7 +588,7 @@ main(int argc, char **argv)
 		if(current_command->pre)
 		{
 			/* Execute it before doing anything else */
-			if(current_command->fn(current_command->nargs, &(argv[c])))
+			if(current_command->fn(current_command->nargs + 1, &(argv[c])))
 			{
 				exit(EXIT_FAILURE);
 			}
@@ -624,7 +662,7 @@ main(int argc, char **argv)
 			}		
 			if(!current_command->pre)
 			{
-				if(current_command->fn(current_command->nargs, &(argv[c])))
+				if(current_command->fn(current_command->nargs + 1, &(argv[c])))
 				{
 					exit(EXIT_FAILURE);
 				}
