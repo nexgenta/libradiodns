@@ -42,9 +42,6 @@ $ ./radiodns dvb 0x233a 0x1041 0x10bf 0x3098
 Domain: 3098.10bf.1041.233a.dvb.tvdns.net
 Target: west.bbc.srv.tvdns.net
 
-At the moment, neither the library nor the command-line tool performs any
-queries for SRV records -- this is next on the to-do list.
-
 If you just want to find out what the application-discovery target of a given
 FQDN is, you can do:
 
@@ -54,3 +51,81 @@ rnds.musicradio.com
 If no options such as -target or -domain are specified on the command-line,
 the utility behaves as though '-domain -target' were supplied, and defaults
 to being verbose unless '-quiet' is specified.
+
+To perform service discovery, you will need to specify the '-app' parameter,
+along with the name of the service you're attempting to locate. At the moment,
+only _tcp services are supported.
+
+For example:
+
+$ ./radiodns -app radiovis fm 9580 0xc586 0xce1
+Instance (no name):
+  1 service records.
+  IN SRV 0 100 61613 vis.musicradio.com.
+
+This does, of course, work on ordinary DNS domains which advertise SRV
+records in the usual fashion. For example:
+
+$ ./radiodns -app xmpp-server dns google.com
+Instance (no name):
+  5 service records.
+  IN SRV 20 0 5269 xmpp-server4.l.google.com.
+  IN SRV 5 0 5269 xmpp-server.l.google.com.
+  IN SRV 20 0 5269 xmpp-server1.l.google.com.
+  IN SRV 20 0 5269 xmpp-server2.l.google.com.
+  IN SRV 20 0 5269 xmpp-server3.l.google.com.
+
+In a minor divergance from the RadioDNS specification, libradiodns supports
+multiple service instances, using PTR records (as per DNS-SD):
+
+$ ./radiodns -app http dns-sd.org
+Instance (no name):
+  1 service records.
+  IN SRV 0 100 80 www.dns-sd.org.
+Instance \032*\032DNS\032Service\032Discovery:
+  1 service records.
+  IN SRV 0 0 80 dns-sd.org.
+Instance Stuart\226\128\153s\032Printer:
+  1 service records.
+  IN SRV 0 0 80 exampleprinter.dns-sd.org.
+Instance \032*\032CNN,\032World\032news:
+  1 service records.
+  IN SRV 0 0 80 www.cnn.com.
+Instance \032*\032BBC,\032World\032news:
+  1 service records.
+  IN SRV 0 0 80 news.bbc.co.uk.
+Instance \032*\032Multicast\032DNS:
+  1 service records.
+  IN SRV 0 0 80 multicastdns.org.
+Instance \032*\032Zeroconf:
+  1 service records.
+  IN SRV 0 0 80 zeroconf.org.
+Instance \032*\032Wired,\032Technology,\032Culture,\032Business,\032Politics:
+  1 service records.
+  IN SRV 0 0 80 wired.com.
+Instance \032*\032SlashDot,\032News\032for\032Nerds,\032Stuff\032that\032Matters:
+  1 service records.
+  IN SRV 0 0 80 slashdot.org.
+Instance \032*\032Yahoo,\032maps,\032weather,\032and\032stock\032quotes:
+  1 service records.
+  IN SRV 0 0 80 www.yahoo.com.
+Instance \032*\032Amazon\:
+  1 service records.
+  IN SRV 0 0 80 www.amazon.com.
+Instance \032*\032Google,\032searching\032the\032Web:
+  1 service records.
+  IN SRV 0 0 80 www.google.com.
+Instance \032*\032Apple,\032makers\032of\032the\032iPod:
+  1 service records.
+  IN SRV 0 0 80 www.apple.com.
+Instance \032*\032eBay,\032online\032auctions:
+  1 service records.
+  IN SRV 0 0 80 www.ebay.com.
+
+In this example, dns-sd.org has a SRV record on _http._tcp.dns-sd.org, but it
+*also* has thirteen PTR records, consituting named service instances. In the
+context of RadioTAG, RadioVIS and RadioEPG this isn't especially useful, but
+future RadioDNS-based services may benefit from the ability to advertise
+multiple distinct instances of an application (as distinct from multiple
+SRV records relating to a single instance).
+
