@@ -1,0 +1,10 @@
+prefix=
+exec_prefix=
+libdir=${pcfiledir}
+includedir=${pcfiledir}
+
+Name: libradiodns-@VERSION@ uninstalled
+Description: RadioDNS client library
+Version: @VERSION@
+Libs: -L${libdir} -lradiodns @RESOLVER_LIBS@ @EXTRA_LIBS@
+Cflags: -I${includedir}
