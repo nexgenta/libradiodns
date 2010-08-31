@@ -1,0 +1,43 @@
+If you have checked this project out from a version-control repository,
+or have modified one of the autotools-related files, you will inevitably
+need to rebuild the 'configure' script, as well as the 'config.h.in'
+template, and 'Makefile.in' files which make up this project's build
+logic.
+
+This project uses Nexgenta buildtools, from
+
+  http://github.com/nexgenta/buildtools
+
+The guts of buildtools are invoked by running the 'buildtools/autogen'
+script from the top level of the source project.
+
+The autogen script itself uses a number of environment variables in order
+to locate the various tools that it uses. Unfortunately, different systems
+use different names for these, and so without going the whole hog of writing
+a configure-style script in order to generate configure scripts, environment
+variables are the only sane choice.
+
+The following environment variables should be set if the autogen script
+fails because it can't locate the relevant tool on your system (and you
+know that it's installed) -- their names and default values are shown
+below:
+
+AUTOHEADER26                  autoheader26
+LIBTOOLIZE15                  libtoolize15
+ACLOCAL110                    aclocal110
+AUTOMAKE110                   automake110
+AUTOCONF26                    autoconf26
+AUTORECONF                    autoreconf
+GPATCH                        patch
+
+On a Debian Lenny system, for example, the following are set:
+
+AUTOHEADER26=autoheader
+LIBTOOLIZE15=libtoolize
+AUTOMAKE110=automake-1.10
+AUTOCONF26=autoconf
+ACLOCAL110=aclocal-1.10
+
+You may find it useful to put the settings in your ~/.profile or similar,
+especially if you think you're going to need to re-generate the configure
+script and Makefiles of this project fairly often.
