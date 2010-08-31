@@ -1,6 +1,6 @@
 CFLAGS = -W -Wall -O0 -g
 LDFLAGS =
-LIBS = -lresolv
+LIBS = -Wl,-Bstatic -lresolv -Wl,-Bdynamic
 
 LIBOUT = libradiodns.a
 LIBOBJ = context.o resolver.o
