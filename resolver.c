@@ -160,6 +160,7 @@ radiodns_resolve_app(radiodns_t *context, const char *name, const char *protocol
 	defapp = NULL;
 	namedapps = NULL;
 	abuf = NULL;
+	r = 0; /* -1 == some catchable error, -2 == catastrophic error */
 	for(c = 0; c < len; c++)
 	{
 		if(ns_parserr(&handle, ns_s_an, c, &rr))
@@ -177,17 +178,14 @@ radiodns_resolve_app(radiodns_t *context, const char *name, const char *protocol
 			{
 				if(!(abuf = (unsigned char *) malloc(RDNS_ANSWERBUFLEN)))
 				{
-					radiodns_destroy_app(namedapps);
-					radiodns_destroy_app(defapp);
-					return NULL;
+					r = -2;
+					break;
 				}
 			}
 			if(!(app = app_create()))
 			{
-				free(abuf);
-				radiodns_destroy_app(namedapps);
-				radiodns_destroy_app(defapp);
-				return NULL;
+				r = -2;
+				break;
 			}
 			r = app_follow_ptr(app, abuf, handle, rr);
 			if(r == 0)
@@ -202,11 +200,8 @@ radiodns_resolve_app(radiodns_t *context, const char *name, const char *protocol
 			}
 			else
 			{
-				free(abuf);
 				radiodns_destroy_app(app);
-				radiodns_destroy_app(namedapps);
-				radiodns_destroy_app(defapp);
-				return NULL;
+				break;
 			}	
 		}
 		else if(ns_rr_type(rr) == ns_t_txt)
@@ -215,12 +210,14 @@ radiodns_resolve_app(radiodns_t *context, const char *name, const char *protocol
 			{
 				if(!(defapp = app_create()))
 				{
-					radiodns_destroy_app(namedapps);
-					free(abuf);
-					return NULL;
+					r = -2;
+					break;
 				}
 			}
-			app_parse_txt(defapp, handle, rr, dnbuf);
+			if(-2 == (r = app_parse_txt(defapp, handle, rr, dnbuf)))
+			{
+				break;
+			}
 		}
 		else if(ns_rr_type(rr) == ns_t_srv)
 		{
@@ -228,19 +225,16 @@ radiodns_resolve_app(radiodns_t *context, const char *name, const char *protocol
 			{
 				if(!(defapp = app_create()))
 				{
-					radiodns_destroy_app(namedapps);
-					free(abuf);
-					return NULL;
+					r = -2;
+					break;
 				}
 			}
 			if(!defapp->srv)
 			{
 				if(!(defapp->srv = (radiodns_srv_t *) calloc(len, sizeof(radiodns_srv_t))))
 				{
-					radiodns_destroy_app(namedapps);
-					radiodns_destroy_app(defapp);
-					free(abuf);
-					return NULL;
+					r = -2;
+					break;
 				}
 			}
 			r = app_parse_srv(defapp, handle, rr, dnbuf, &(defapp->srv[defapp->nsrv]));
@@ -250,19 +244,30 @@ radiodns_resolve_app(radiodns_t *context, const char *name, const char *protocol
 			}
 			else if(r == -2)
 			{
-				radiodns_destroy_app(namedapps);
-				radiodns_destroy_app(defapp);
-				free(abuf);
-				return NULL;				
+				break;
 			}
 		}
 	}
 	free(abuf);
+	if(r == -2)
+	{
+		radiodns_destroy_app(defapp);
+		radiodns_destroy_app(namedapps);
+		return NULL;
+	}
 	if(defapp)
 	{
-		defapp->next = namedapps;
-		return defapp;
+		if(defapp->nsrv)
+		{
+			defapp->next = namedapps;
+			return defapp;
+		}
+		radiodns_destroy_app(defapp);
 	}
+	/* In the event that there actually wasn't anything worth returning,
+	 * don't confuse matters by leaving errno set to something random.
+	 */
+	errno = 0;
 	return namedapps;
 }
 
