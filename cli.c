@@ -521,10 +521,33 @@ cmd_app(int argc, char **argv)
 		{
 			printf("Instance (no name):\n");
 		}
-		printf("  %d service records.\n", p->nsrv);
+		if(p->nsrv == 1)
+		{
+			printf("  1 service record:\n");
+		}
+		else
+		{
+			printf("  %d service records:\n", p->nsrv);
+		}
 		for(c = 0; c < p->nsrv; c++)
 		{
-			printf("  IN SRV %d %d %d %s.\n", p->srv[c].priority, p->srv[c].weight, p->srv[c].port, p->srv[c].target);
+			printf("    IN SRV %d %d %d %s.\n", p->srv[c].priority, p->srv[c].weight, p->srv[c].port, p->srv[c].target);
+		}
+		if(!p->nparams)
+		{
+			printf("  No parameters.\n");
+		}
+		else if(p->nparams == 1)
+		{
+			printf("  1 parameter:\n");
+		}
+		else
+		{
+			printf("  %d parameters:\n", p->nparams);
+		}
+		for(c = 0; c < p->nparams; c++)
+		{
+			printf("    %s = %s\n", p->params[c].key, p->params[c].value);
 		}
 	}
 	radiodns_destroy_app(app);

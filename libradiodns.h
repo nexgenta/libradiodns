@@ -22,14 +22,24 @@
 typedef struct radiodns_struct radiodns_t;
 typedef struct radiodns_app_struct radiodns_app_t;
 typedef struct radiodns_srv_struct radiodns_srv_t;
+typedef struct radiodns_kv_struct radiodns_kv_t;
+
+struct radiodns_kv_struct
+{
+	const char *key;
+	const char *value;
+};
 
 struct radiodns_app_struct
 {
 	radiodns_app_t *next;
 	char *name;
-	char *txt;
+	radiodns_kv_t *params;
+	int nparams;
 	int nsrv;
 	radiodns_srv_t *srv;
+	char *_pbuf;
+	int _plen;
 };
 
 struct radiodns_srv_struct

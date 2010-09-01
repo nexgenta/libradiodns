@@ -24,6 +24,8 @@
 
 /* Maximum answer buffer size -- 16 UDP packets should be sane */
 #define RDNS_ANSWERBUFLEN               (512 * 16)
+/* Maximum number of parameters supported */
+#define RDNS_MAXPARAMS                  8
 
 static radiodns_app_t *app_create(void);
 static int app_parse_params(radiodns_app_t *app, const char *txtrec);
@@ -279,6 +281,8 @@ radiodns_destroy_app(radiodns_app_t *app)
 		}
 		free(app->srv);
 		free(app->name);
+		free(app->_pbuf);
+		free(app->params);
 		free(app);
 		app = p;
 	}
@@ -294,7 +298,85 @@ app_create(void)
 static int
 app_parse_params(radiodns_app_t *app, const char *txtrec)
 {
-	printf("[TXT record = %s]\n", txtrec);
+	size_t l;
+	char *p;
+	const char *t;
+	radiodns_kv_t kv;
+	int c;
+
+	if(app->nparams == RDNS_MAXPARAMS)
+	{
+		/* Don't attempt to parse any more */
+		return 0;
+	}
+	if(!app->params)
+	{
+		if(!(app->params = (radiodns_kv_t *) calloc(RDNS_MAXPARAMS, sizeof(radiodns_kv_t))))
+		{
+			return -2;
+		}
+	}
+	l = app->_plen;
+	if(!(p = (char *) realloc(app->_pbuf, l + strlen(txtrec) + 4)))
+	{
+		return -2;
+	}
+	if(app->_pbuf)
+	{
+		/* Adjust all of the pointers based on the realloc'd buffer */
+		for(c = 0; c < app->nparams; c++)
+		{
+			app->params[c].key = p + (app->params[c].key - app->_pbuf);
+			app->params[c].value = p + (app->params[c].value - app->_pbuf);
+		}
+	}
+	app->_pbuf = p;
+	p = &(p[l]);
+	while(*txtrec && app->nparams < RDNS_MAXPARAMS)
+	{
+		while(isspace(*txtrec))
+		{
+			txtrec++;
+		}
+		if(!*txtrec)
+		{
+			break;
+		}
+		for(t = txtrec; *t && *t != '='; t++);
+		if(!t)
+		{
+			break;
+		}
+		kv.key = p;
+		for(t = txtrec; *t && *t != '=' && !isspace(*t); t++)
+		{
+			*p = *t;
+			p++;
+		}
+		*p = 0;
+		p++;
+		kv.value = p;
+		while(*t != '=')
+		{
+			t++;
+		}
+		t++;
+		for(; *t && !isspace(*t); t++)
+		{
+			*p = *t;
+			p++;
+		}
+		*p = 0;
+		p++;
+		txtrec = t;
+		app->params[app->nparams] = kv;
+		app->nparams++;
+	}
+	*p = 0;
+	p++;
+	*p = 0;
+	p++;
+	app->_plen = p - app->_pbuf;
 	return 0;
 }
 
