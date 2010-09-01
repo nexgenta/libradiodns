@@ -515,7 +515,7 @@ cmd_app(int argc, char **argv)
 	{
 		if(p->name)
 		{
-			printf("Instance %s:\n", p->name);
+			printf("Instance \"%s\":\n", p->name);
 		}
 		else
 		{

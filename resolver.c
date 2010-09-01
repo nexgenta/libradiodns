@@ -303,6 +303,7 @@ app_parse_params(radiodns_app_t *app, const char *txtrec)
 	const char *t;
 	radiodns_kv_t kv;
 	int c;
+	char hbuf[3];
 
 	if(app->nparams == RDNS_MAXPARAMS)
 	{
@@ -348,10 +349,23 @@ app_parse_params(radiodns_app_t *app, const char *txtrec)
 			break;
 		}
 		kv.key = p;
-		for(t = txtrec; *t && *t != '=' && !isspace(*t); t++)
+		t = txtrec;
+		while(*t && *t != '=' && !isspace(*t))
 		{
+			if(*t == '%' && isxdigit(t[1]) && isxdigit(t[2]))
+			{
+				hbuf[0] = t[1];
+				hbuf[1] = t[2];
+				hbuf[2] = 0;
+				c = strtol(hbuf, NULL, 16);
+				*p = c;
+				p++;
+				t += 3;
+				continue;
+			}
 			*p = *t;
 			p++;
+			t++;
 		}
 		*p = 0;
 		p++;
@@ -361,10 +375,22 @@ app_parse_params(radiodns_app_t *app, const char *txtrec)
 			t++;
 		}
 		t++;
-		for(; *t && !isspace(*t); t++)
+		while(*t && !isspace(*t))
 		{
+			if(*t == '%' && isxdigit(t[1]) && isxdigit(t[2]))
+			{
+				hbuf[0] = t[1];
+				hbuf[1] = t[2];
+				hbuf[2] = 0;
+				c = strtol(hbuf, NULL, 16);
+				*p = c;
+				p++;
+				t += 3;
+				continue;
+			}
 			*p = *t;
 			p++;
+			t++;
 		}
 		*p = 0;
 		p++;
@@ -383,22 +409,41 @@ app_parse_params(radiodns_app_t *app, const char *txtrec)
 static int 
 app_follow_ptr(radiodns_app_t *app, unsigned char *abuf, ns_msg phandle, ns_rr prr)
 {
-	char dnbuf[MAXDNAME + 1];
-	char *d, *p;
+	char dnbuf[MAXDNAME + 1], dbuf[4];
+	char *d, *p, *endp;
 	ns_msg handle;
 	ns_rr rr;
 	int c, len, r;
-
+	
 	dn_expand(ns_msg_base(phandle), ns_msg_base(phandle) + ns_msg_size(phandle), ns_rr_rdata(prr), dnbuf, sizeof(dnbuf));	
 	if(!(app->name = (char *) calloc(1, strlen(dnbuf))))
 	{
 		return -2;
 	}
 	d = app->name;
-	for(p = dnbuf; *p && *p != '.'; p++)
+	p = dnbuf;
+	while(*p && *p != '.')
 	{
+		if(*p == '\\' && isdigit(p[1]) && isdigit(p[2]) && isdigit(p[3]))
+		{
+			dbuf[0] = p[1];
+			dbuf[1] = p[2];
+			dbuf[2] = p[3];
+			dbuf[3] = 0;
+			c = strtol(dbuf, NULL, 10);
+			*d = c;
+			d++;
+			p += 4;
+			continue;
+		}
+		else if(*p == '\\' && p[1])
+		{
+			/* Skip the backslash, allowing it to escape the '.' */
+			p++;
+		}
 		*d = *p;
 		d++;
+		p++;
 	}
 	*d = 0;
 	if(0 >= (len = res_query(dnbuf, ns_c_in, ns_t_any, abuf, RDNS_ANSWERBUFLEN)))
