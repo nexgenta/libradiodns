@@ -42,38 +42,48 @@ static int cmd_target(int argc, char **argv);
 static int cmd_verbose(int argc, char **argv);
 static int cmd_quiet(int argc, char **argv);
 static int cmd_app(int argc, char **argv);
+static int cmd_help(int argc, char **argv);
+static int cmd_interactive(int argc, char **argv);
+static int cmd_exit(int argc, char **argv);
 
 struct command {
 	const char *name;
 	int (*fn)(int argc, char **argv);
-	int nargs;
-	int bare:1;
-	int pre:1;
-	int visible:1;
-	const char *usage;
+	int nargs; /* Number of arguments required if used as an option */
+	int bare:1; /* Available as a non-option command on the CLI */
+	int pre:1; /* Available as an option (pre-exec) */
+	int post:1; /* Available as an option (post-exec) */
+	int visible:1; /* Hide from command list if zero */
+	const char *help; /* Description for command list */
+	const char *usage; /* Usage message */
 };
 
 static struct command commands[] = {
-	{ "dns", cmd_dns, 0, 1, 0, 1, "DOMAIN"},
-	{ "fm", cmd_fm, 0, 1, 0, 1, "FREQ PI COUNTRY [SUFFIX]\n - FREQ is specified in units of 10KHz\n - COUNTRY must be an ISO country code or an RDS ECC\n"},
-	{ "vhf", cmd_fm, 0, 1, 0, 0, "FREQ PI COUNTRY [SUFFIX]\n - FREQ is specified in units of 10KHz\n - COUNTRY must be an ISO country code or an RDS ECC\n"},
-	{ "dab", cmd_dab, 0, 1, 0, 1, "SCIDS SID EID ECC [APPTYPE-UATYPE|PA] [SUFFIX]\n - APPTYPE-UATYPE must be specified in hexadecimal, with no prefix (e.g.,\n   1F-3C5)" },
-	{ "drm", cmd_drm, 0, 1, 0, 1, "SID [SUFFIX]" },
-	{ "dvb", cmd_dvb, 0, 1, 0, 1, "ONID TSID SID NID [SUFFIX]" },
-	{ "amss", cmd_amss, 0, 1, 0, 1, "SID [SUFFIX]" },
-	{ "hdradio", cmd_hdradio, 0, 1, 0, 1, "TX CC [SUFFIX]" },
-	{ "target", cmd_target, 0, 0, 0, 1, NULL },
-	{ "domain", cmd_domain, 0, 0, 0, 1, NULL },
-	{ "verbose", cmd_verbose, 0, 0, 1, 1, NULL },
-	{ "quiet", cmd_quiet, 0, 0, 1, 1, NULL },
-	{ "app", cmd_app, 1, 0, 0, 1, "TYPE" },
-	{ NULL, NULL, 0, 0, 0, 0, NULL },
+	{ "dns", cmd_dns, 0, 1, 0, 0, 1, "Create a context using a domain name", "DOMAIN"},
+	{ "fm", cmd_fm, 0, 1, 0, 0, 1, "Create a context for FM radio", "FREQ PI COUNTRY [SUFFIX]\n - FREQ is specified in units of 10KHz\n - COUNTRY must be an ISO country code or an RDS ECC\n"},
+	{ "vhf", cmd_fm, 0, 1, 0, 0, 0, NULL, "FREQ PI COUNTRY [SUFFIX]\n - FREQ is specified in units of 10KHz\n - COUNTRY must be an ISO country code or an RDS ECC\n"},
+	{ "dab", cmd_dab, 0, 1, 0, 0, 1, "Create a context for Digital Audio Broadcasting", "SCIDS SID EID ECC [APPTYPE-UATYPE|PA] [SUFFIX]\n - APPTYPE-UATYPE must be specified in hexadecimal, with no prefix (e.g.,\n   1F-3C5)" },
+	{ "drm", cmd_drm, 0, 1, 0, 0, 1, "Create a context for Digital Radio Mondiale", "SID [SUFFIX]" },
+	{ "dvb", cmd_dvb, 0, 1, 0, 0, 1, "Create a context for Digital Video Broadcasting", "ONID TSID SID NID [SUFFIX]" },
+	{ "amss", cmd_amss, 0, 1, 0, 0, 1, "Create a content for AM Signalling System", "SID [SUFFIX]" },
+	{ "hdradio", cmd_hdradio, 0, 1, 0, 0, 1, "Create a context for HD Radio", "TX CC [SUFFIX]" },
+	{ "target", cmd_target, 0, 0, 0, 1, 1, "Resolve and print the target domain for a context", NULL },
+	{ "domain", cmd_domain, 0, 0, 0, 1, 1, "Print the domain name of a context", NULL },
+	{ "verbose", cmd_verbose, 0, 0, 1, 0, 1, "Be verbose", NULL },
+	{ "quiet", cmd_quiet, 0, 0, 1, 0, 1, "Don't be verbose", NULL },
+	{ "app", cmd_app, 1, 0, 0, 1, 1, "Look up records for an application", "TYPE" },
+	{ "help", cmd_help, 0, 0, 1, 0, 1, "Show command list", NULL },
+	{ "interactive", cmd_interactive, 0, 0, 1, 0, 0, NULL, NULL },
+	{ "exit", cmd_exit, 0, 0, 0, 0, 1, "Exit interactive mode", NULL },
+	{ "quit", cmd_exit, 0, 0, 0, 0, 0, NULL, NULL },
+	{ NULL, NULL, 0, 0, 0, 0, 0, NULL, NULL },
 };
 
 const char *progname;
 static struct command *current_command;
 static radiodns_t *context;
 static int verbose = -1;
+static int interactive_mode = 0;
 
 static void
 usage()
@@ -91,23 +101,25 @@ usage()
 	}
 	else
 	{
-		fprintf(stderr, "Usage: %s [OPTIONS] KIND ARGS...\n", progname);
+		fprintf(stderr, "Usage: %s [OPTIONS] [KIND ARGS...]\n", progname);
 		fprintf(stderr, " KIND is one of 'dns', 'fm', 'dab', 'drm', amss', or 'hdradio'\n");
 		fprintf(stderr, " Unless otherwise stated, numeric values can be specified in decimal,\n"
 				" hexadecimal (with a '0x' prefix), or octal (with a '0' prefix).\n\n");
 
 		fprintf(stderr, "OPTIONS can include any of the following flags:\n");
-		fprintf(stderr, " -quiet      Be quiet\n");
-		fprintf(stderr, " -verbose    Be verbose\n\n");
+		fprintf(stderr, " -quiet        Be quiet\n");
+		fprintf(stderr, " -verbose      Be verbose\n");
+		fprintf(stderr, " -interactive  Enter interactive mode\n\n");
 
 		fprintf(stderr, "OPTIONS can also include any of the following commands:\n");
-		fprintf(stderr, " -target     Print the application-discovery target domain name.\n");
-		fprintf(stderr, " -domain     Print the source (constructed) domain name.\n");
-		fprintf(stderr, " -app NAME   Look for instances of _NAME._tcp within the target domain.\n\n");
+		fprintf(stderr, " -target       Print the application-discovery target domain name.\n");
+		fprintf(stderr, " -domain       Print the source (constructed) domain name.\n");
+		fprintf(stderr, " -app NAME     Look for instances of _NAME._tcp within the target domain.\n\n");
 
 		fprintf(stderr, "If no OPTIONS are supplied, behaviour is as if -domain -target were\n");
 		fprintf(stderr, "specified on the command-line, and the 'verbose' flag is enabled unless\n");
-		fprintf(stderr, "-quiet is explicitly specified.\n");
+		fprintf(stderr, "-quiet is explicitly specified.\n\n");
+		fprintf(stderr, "If no parameters are given at all, enter interactive mode.\n");
 	}
 }
 
@@ -120,6 +132,25 @@ check_context(radiodns_t *context)
 	}
 	fprintf(stderr, "%s: failed to create context: %s\n", progname, strerror(errno));
 	return 1;
+}
+
+static int
+cmd_interactive(int argc, char **argv)
+{
+	(void) argc;
+	(void) argv;
+
+	interactive_mode = 1;
+	return 0;
+}
+
+static int
+cmd_exit(int argc, char **argv)
+{
+	(void) argc;
+	(void) argv;
+
+	exit(EXIT_SUCCESS);
 }
 
 static int
@@ -136,6 +167,25 @@ cmd_dns(int argc, char **argv)
 	}
 	context = radiodns_create(argv[1]);
 	return check_context(context);
+}
+
+static int
+cmd_help(int argc, char **argv)
+{
+	int c;
+
+	(void) argc;
+	(void) argv;
+
+	for(c = 0; commands[c].name; c++)
+	{
+		if(!commands[c].help || !commands[c].visible)
+		{
+			continue;
+		}
+		printf(" %-20s %s\n", commands[c].name, commands[c].help);
+	}
+	return 0;
 }
 
 static int
@@ -448,6 +498,11 @@ cmd_domain(int argc, char **argv)
 	(void) argc;
 	(void) argv;
 
+	if(!context)
+	{
+		fprintf(stderr, "Error: cannot print domain name before a context has been created.\n");
+		return 1;
+	}
 	if(verbose)
 	{
 		printf("Domain: ");
@@ -462,6 +517,11 @@ cmd_target(int argc, char **argv)
 	(void) argc;
 	(void) argv;
 
+	if(!context)
+	{
+		fprintf(stderr, "Error: cannot resolve target before a context has been created.\n");
+		return 1;
+	}
 	if(0 > radiodns_resolve_target(context))
 	{
 		fprintf(stderr, "%s: error resolving target: errno = %d, h_errno = %d\n", progname, errno, h_errno);
@@ -554,6 +614,84 @@ cmd_app(int argc, char **argv)
 	return 0;
 }
 
+static int
+interactive(void)
+{
+	char buf[1024];
+	char *t;
+	int argc, c, mult;
+	char *argv[16];
+
+	printf("Entering interactive mode. Type 'help' for a command list.\n");
+	while(1)
+	{
+		if(context)
+		{
+			printf("%s> ", radiodns_domain(context));
+		}
+		else
+		{
+			printf("RadioDNS> ");
+		}
+		fflush(stdout);
+		fgets(buf, sizeof(buf), stdin);
+		argc = 0;
+		t = buf;
+		while(*t && argc < 16)
+		{
+			while(*t && isspace(*t))
+			{
+				t++;
+			}
+			if(!*t)
+			{
+				break;
+			}
+			argv[argc] = t;
+			while(*t && !isspace(*t))
+			{
+				t++;
+			}
+			if(*t)
+			{
+				*t = 0;
+				t++;
+			}
+			argc++;
+		}
+		if(!argc)
+		{
+			continue;
+		}
+		current_command = NULL;
+		mult = 0;
+		for(c = 0; commands[c].name; c++)
+		{
+			if(!strncmp(commands[c].name, argv[0], strlen(argv[0])))
+			{
+				if(current_command)
+				{
+					mult = 1;
+					break;
+				}
+				current_command = &(commands[c]);
+			}
+		}
+		if(mult)
+		{
+			fprintf(stderr, "Error: '%s' is ambiguous\n", argv[0]);
+			continue;
+		}
+		if(!current_command)
+		{
+			fprintf(stderr, "Error: No such command '%s'. Use 'help' for a list of commands.\n", argv[0]);
+			continue;
+		}
+		current_command->fn(argc, argv);
+	}
+	return 0;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -574,7 +712,7 @@ main(int argc, char **argv)
 		current_command = NULL;
 		for(d = 0; commands[d].name; d++)
 		{
-			if(commands[d].bare)
+			if(commands[d].bare || (!commands[d].pre && !commands[d].post))
 			{
 				continue;
 			}
@@ -592,6 +730,13 @@ main(int argc, char **argv)
 		{
 			fprintf(stderr, "%s: no such option '%s'\n", progname, argv[c]);
 			exit(EXIT_FAILURE);
+		}
+		/* Nasty special case */
+		if(!strcmp(current_command->name, "help"))
+		{
+			current_command = NULL;
+			usage();
+			exit(EXIT_SUCCESS);
 		}
 		if(argc - c - 1 < current_command->nargs)
 		{
@@ -628,36 +773,35 @@ main(int argc, char **argv)
 	current_command = NULL;
 	if(c == argc)
 	{
-		/* In a future version, we might flip to an interactive
-		 * mode, but not yet.
-		 */
-		usage();
-		exit(EXIT_FAILURE);
+		cmd_interactive(0, NULL);
 	}
-	for(d = 0; commands[d].name; d++)
+	else
 	{
-		if(!commands[d].bare)
+		for(d = 0; commands[d].name; d++)
 		{
-			continue;
-		}
-		if(!strncmp(commands[d].name, argv[c], strlen(argv[c])))
-		{
-			if(current_command)
+			if(!commands[d].bare)
 			{
-				fprintf(stderr, "%s: '%s' is ambiguous\n", progname, argv[c]);
-				exit(EXIT_FAILURE);
+				continue;
 			}
-			current_command = &(commands[d]);
+			if(!strncmp(commands[d].name, argv[c], strlen(argv[c])))
+			{
+				if(current_command)
+				{
+					fprintf(stderr, "%s: '%s' is ambiguous\n", progname, argv[c]);
+					exit(EXIT_FAILURE);
+				}
+				current_command = &(commands[d]);
+			}
 		}
-	}
-	if(!current_command)
-	{
-		fprintf(stderr, "%s: '%s' is not a known kind\n", progname, argv[c]);
-		exit(EXIT_FAILURE);
-	}
-	if(current_command->fn(argc - c, &(argv[c])))
-	{
-		exit(EXIT_FAILURE);
+		if(!current_command)
+		{
+			fprintf(stderr, "%s: '%s' is not a known kind\n", progname, argv[c]);
+			exit(EXIT_FAILURE);
+		}
+		if(current_command->fn(argc - c, &(argv[c])))
+		{
+			exit(EXIT_FAILURE);
+		}
 	}
 	if(immediate)
 	{	
@@ -675,7 +819,7 @@ main(int argc, char **argv)
 			current_command = NULL;
 			for(d = 0; commands[d].name; d++)
 			{
-				if(commands[d].bare)
+				if(commands[d].bare || (!commands[d].post && !commands[d].pre))
 				{
 					continue;
 				}
@@ -695,7 +839,11 @@ main(int argc, char **argv)
 			c += current_command->nargs;
 		}
 	}
-	else
+	if(interactive_mode)
+	{
+		r = interactive();
+	}
+	else if(!immediate)
 	{
 		/* Pretend that '-verbose -domain -target' was specified */
 		if(verbose == -1)
