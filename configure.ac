@@ -57,6 +57,8 @@ AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile
 libradiodns.pc
 libradiodns-uninstalled.pc
+buildtools/Makefile
+buildtools/ext/Makefile
 ])
 
 AC_OUTPUT

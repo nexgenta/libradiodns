@@ -14,7 +14,10 @@
 ##  See the License for the specific language governing permissions and
 ##  limitations under the License.
 
-EXTRA_DIST = libradiodns.pc.in libradiodns-uninstalled.pc.in
+DIST_SUBDIRS = buildtools
+
+EXTRA_DIST = LICENSE NOTICE README.GIT \
+	libradiodns.pc.in libradiodns-uninstalled.pc.in
 
 DISTCLEANFILES = libradiodns.pc libradiodns-uninstalled.pc
 
