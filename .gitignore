@@ -15,13 +15,13 @@
 .deps
 .libs
 .dirstamp
+Makefile
+Makefile.in
 /config.h
 /config.h.in
 /config.log
 /stamp-h1
 /stamp-h2
-/Makefile
-/Makefile.in
 /aclocal.m4
 /autom4te.cache
 /configure

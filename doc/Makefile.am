@@ -14,34 +14,20 @@
 ##  See the License for the specific language governing permissions and
 ##  limitations under the License.
 
-DIST_SUBDIRS = buildtools
+man_MANS = radiodns_create.3
 
-SUBDIRS = doc
+## Distribute the manpages along with the source to save people needing
+## docbook2x
 
-EXTRA_DIST = LICENSE NOTICE README.GIT \
-	libradiodns.pc.in libradiodns-uninstalled.pc.in
+EXTRA_DIST = $(man_MANS) \
+	radiodns_create.xml
 
-DISTCLEANFILES = libradiodns.pc libradiodns-uninstalled.pc
+if HAVE_DB2X
 
-pkgconfig_DATA = libradiodns.pc
+.mxml.3:
+	$(db2x_manxml) $<
 
-noinst_DATA = libradiodns-uninstalled.pc
+.xml.mxml:
+	$(db2x_xsltproc) -s man $< -o $@
 
-include_HEADERS = libradiodns.h
-
-lib_LTLIBRARIES = libradiodns.la
-
-libradiodns_la_SOURCES = p_radiodns.h \
-	context.c resolver.c
-
-libradiodns_la_LDFLAGS = -avoid-version
-libradiodns_la_LIBADD = @RESOLVER_LIBS@
-
-bin_PROGRAMS = radiodns
-
-radiodns_SOURCES = cli.c
-
-radiodns_LDADD = libradiodns.la @EXTRA_LIBS@
-radiodns_LDFLAGS = -static-libtool-libs
-
-
+endif

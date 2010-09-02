@@ -53,10 +53,24 @@ AC_SUBST([RESOLVER_LIBS])
 AC_SUBST([EXTRA_LIBS])
 LIBS="$orig_LIBS"
 
+have_db2x=no
+AC_CHECK_PROG(db2x_xsltproc,db2x_xsltproc,db2x_xsltproc)
+AC_CHECK_PROG(db2x_manxml,db2x_manxml,db2x_manxml)
+
+if test x"$db2x_xsltproc" = x"" || test x"$db2x_manxml" = x"" ; then
+   AC_MSG_RESULT([warning: docbook2x was not found; documentation will not be rebuilt])
+else
+   have_db2x=yes
+fi
+AM_CONDITIONAL([HAVE_DB2X],[test x"$have_db2x" = x"yes"])
+AC_SUBST([db2x_xsltproc])
+AC_SUBST([db2x_manxml])
+
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile
 libradiodns.pc
 libradiodns-uninstalled.pc
+doc/Makefile
 buildtools/Makefile
 buildtools/ext/Makefile
 ])

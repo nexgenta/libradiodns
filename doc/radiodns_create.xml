@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<refentry id="radiodns_create">
+  <refmeta>
+	<refentrytitle>radiodns_create</refentrytitle>
+	<manvolnum>3</manvolnum>
+  </refmeta>
+  
+  <refnamediv>
+	<refname>radiodns_create</refname>
+	<refpurpose>Create a new RadioDNS context for a domain name</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+	<funcsynopsis>
+	  <funcsynopsisinfo>#include &lt;libradiodns.h&gt;, -lradiodns</funcsynopsisinfo>
+	  <funcprototype>
+		<funcdef>radiodns_context_t *<function>radiodns_create</function></funcdef>
+		<paramdef>const char *<parameter>dnsdomain</parameter></paramdef>
+		</funcprototype>
+	  </funcsynopsis>
+  </refsynopsisdiv>
+
+  <refsection>
+	<title>DESCRIPTION</title>
+	<para>
+	  The <function>radiodns_create</function> family of functions create
+	  a new RadioDNS context which can be used as a handle for performing
+	  application discovery.
+	</para>
+	<para>
+	  The <function>radiodns_create</function> function in particular
+	  creates a context using the specified DNS domain name,
+	  <parameter>dnsdomain</parameter>. This is in contrast to the other
+	  functions in the family, such as
+	  <function>radiodns_create_amss</function>, which use the supplied
+	  parameters to <emphasis>generate</emphasis> a domain name.
+	</para>
+	<para>
+	  Once a context has been created, its target domain name can be
+	  discovered using <function>radiodns_resolve_target</function>. The
+	  target domain name is the fully-qualified domain name which, in
+	  the event of <parameter>dnsdomain</parameter> (or its generated
+	  equivalent) being a <constant>CNAME</constant> or
+	  <constant>DNAME</constant>, is ultimately referred to, accounting
+	  for chains of <constant>CNAME</constant> records.
+	</para>
+	<para>
+	  For example, if <function>radiodns_create</function> was called
+	  with a <parameter>dnsdomain</parameter> value of
+	  <literal>foo.example.com</literal>, and
+	  <literal>foo.example.com</literal> was a <constant>CNAME</constant>
+	  referring to <literal>bar.example.org</literal>, and this was not
+	  itself a <constant>CNAME</constant> or <constant>DNAME</constant>,
+	  then the target domain name for the context would be
+	  <literal>bar.example.org</literal>.
+	</para>
+	<para>
+	  Application discovery can be performed on a context using
+	  <function>radiodns_resolve_app</function>. This function queries
+	  DNS for specifically-named records which are children of the
+	  target associated with the context. Further details are included
+	  in the description of the <function>radiodns_resolve_app</function>
+	  function itself.
+	</para>
+  </refsection>
+  <refsection>
+	<title>RETURN VALUE</title>
+	<para>
+	  On success, <function>radiodns_resolve_app</function> returns an
+	  initialized context pointer. On failure, <literal>NULL</literal> is
+	  returned and <varname>errno</varname> is set appropriately. The returned
+	  context should be freed once no longer needed with
+	  <function>radiodns_destroy</function>.
+	</para>
+  </refsection>
+</refentry>

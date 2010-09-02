@@ -1,0 +1,67 @@
+'\" -*- coding: us-ascii -*-
+.if \n(.g .ds T< \\FC
+.if \n(.g .ds T> \\F[\n[.fam]]
+.de URL
+\\$2 \(la\\$1\(ra\\$3
+..
+.if \n(.g .mso www.tmac
+.TH radiodns_create 3 "2 September 2010" "" ""
+.SH NAME
+radiodns_create \- Create a new RadioDNS context for a domain name
+.SH SYNOPSIS
+'nh
+.nf
+\*(T<#include <libradiodns.h>, \-lradiodns\*(T>
+.fi
+.sp 1
+.PP
+.fi
+.ad l
+\*(T<radiodns_context_t *\fBradiodns_create\fR\*(T> \kx
+.if (\nx>(\n(.l/2)) .nr x (\n(.l/5)
+'in \n(.iu+\nxu
+\*(T<(const char *\fIdnsdomain\fR);\*(T>
+'in \n(.iu-\nxu
+.ad b
+'hy
+.SH DESCRIPTION
+The \*(T<\fBradiodns_create\fR\*(T> family of functions create
+a new RadioDNS context which can be used as a handle for performing
+application discovery.
+.PP
+The \*(T<\fBradiodns_create\fR\*(T> function in particular
+creates a context using the specified DNS domain name,
+\*(T<dnsdomain\*(T>. This is in contrast to the other
+functions in the family, such as
+\*(T<\fBradiodns_create_amss\fR\*(T>, which use the supplied
+parameters to \fIgenerate\fR a domain name.
+.PP
+Once a context has been created, its target domain name can be
+discovered using \*(T<\fBradiodns_resolve_target\fR\*(T>. The
+target domain name is the fully-qualified domain name which, in
+the event of \*(T<dnsdomain\*(T> (or its generated
+equivalent) being a CNAME or
+DNAME, is ultimately referred to, accounting
+for chains of CNAME records.
+.PP
+For example, if \*(T<\fBradiodns_create\fR\*(T> was called
+with a \*(T<dnsdomain\*(T> value of
+\*(T<foo.example.com\*(T>, and
+\*(T<foo.example.com\*(T> was a CNAME
+referring to \*(T<bar.example.org\*(T>, and this was not
+itself a CNAME or DNAME,
+then the target domain name for the context would be
+\*(T<bar.example.org\*(T>.
+.PP
+Application discovery can be performed on a context using
+\*(T<\fBradiodns_resolve_app\fR\*(T>. This function queries
+DNS for specifically-named records which are children of the
+target associated with the context. Further details are included
+in the description of the \*(T<\fBradiodns_resolve_app\fR\*(T>
+function itself.
+.SH "RETURN VALUE"
+On success, \*(T<\fBradiodns_resolve_app\fR\*(T> returns an
+initialized context pointer. On failure, \*(T<NULL\*(T> is
+returned and \*(T<errno\*(T> is set appropriately. The returned
+context should be freed once no longer needed with
+\*(T<\fBradiodns_destroy\fR\*(T>.
