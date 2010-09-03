@@ -12,7 +12,7 @@
 
   <refsynopsisdiv>
 	<funcsynopsis>
-	  <funcsynopsisinfo>#include &lt;libradiodns.h&gt;, -lradiodns</funcsynopsisinfo>
+	  <funcsynopsisinfo>#include &lt;radiodns.h&gt;, -lradiodns</funcsynopsisinfo>
 	  <funcprototype>
 		<funcdef>radiodns_context_t *<function>radiodns_create</function></funcdef>
 		<paramdef>const char *<parameter>dnsdomain</parameter></paramdef>

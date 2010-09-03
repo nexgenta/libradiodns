@@ -28,7 +28,7 @@
 #include <netdb.h>
 #include <ctype.h>
 
-#include "libradiodns.h"
+#include "radiodns.h"
 
 static int cmd_dns(int argc, char **argv);
 static int cmd_fm(int argc, char **argv);

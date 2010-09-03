@@ -30,7 +30,7 @@
 # include <netdb.h>
 # include <errno.h>
 
-# include "libradiodns.h"
+# include "radiodns.h"
 
 # ifndef NETDB_INTERNAL
 #  define NETDB_INTERNAL                -1

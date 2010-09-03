@@ -27,7 +27,7 @@ pkgconfig_DATA = libradiodns.pc
 
 noinst_DATA = libradiodns-uninstalled.pc
 
-include_HEADERS = libradiodns.h
+include_HEADERS = radiodns.h
 
 lib_LTLIBRARIES = libradiodns.la
 
