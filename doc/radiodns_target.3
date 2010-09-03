@@ -1,0 +1,45 @@
+'\" -*- coding: us-ascii -*-
+.if \n(.g .ds T< \\FC
+.if \n(.g .ds T> \\F[\n[.fam]]
+.de URL
+\\$2 \(la\\$1\(ra\\$3
+..
+.if \n(.g .mso www.tmac
+.TH radiodns_target 3 "3 September 2010" "" ""
+.SH NAME
+radiodns_target \- Return the target domain name associated with a RadioDNS context
+.SH SYNOPSIS
+'nh
+.nf
+\*(T<#include <radiodns.h>, \-lradiodns\*(T>
+.fi
+.sp 1
+.PP
+.fi
+.ad l
+\*(T<const char *\fBradiodns_target\fR\*(T> \kx
+.if (\nx>(\n(.l/2)) .nr x (\n(.l/5)
+'in \n(.iu+\nxu
+\*(T<(radiodns_context_t *\fIcontext\fR);\*(T>
+'in \n(.iu-\nxu
+.ad b
+'hy
+.SH DESCRIPTION
+If a RadioDNS context has previously resolved its target domain name,
+either directly -- through a successful call to
+\*(T<\fBradiodns_resolve_target\fR\*(T> -- or indirectly, through
+a call to another function (such as
+\*(T<\fBradiodns_resolve_app\fR\*(T>) which automatically invokes
+\*(T<\fBradiodns_resolve_target\fR\*(T> if needed, then
+\*(T<\fBradiodns_target\fR\*(T> returns the target domain name
+which has been associated with the context.
+.PP
+If \*(T<\fBradiodns_resolve_target\fR\*(T> has not yet been invoked,
+or previously failed in some catastrophic manner, then this function
+returns NULL.
+.SH "SEE ALSO"
+\fBradiodns_domain\fR(3)
+, 
+\fBradiodns_resolve_target\fR(3)
+, 
+\fBradiodns_resolve_app\fR(3)

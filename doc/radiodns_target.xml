@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<refentry id="radiodns_target">
+  <refmeta>
+	<refentrytitle>radiodns_target</refentrytitle>
+	<manvolnum>3</manvolnum>
+  </refmeta>
+  
+  <refnamediv>
+	<refname>radiodns_target</refname>
+	<refpurpose>Return the target domain name associated with a RadioDNS context</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+	<funcsynopsis>
+	  <funcsynopsisinfo>#include &lt;radiodns.h&gt;, -lradiodns</funcsynopsisinfo>
+	  <funcprototype>
+		<funcdef>const char *<function>radiodns_target</function></funcdef>
+		<paramdef>radiodns_context_t *<parameter>context</parameter></paramdef>
+	  </funcprototype>
+	</funcsynopsis>
+  </refsynopsisdiv>
+  
+  <refsection>
+	<title>DESCRIPTION</title>
+	<para>
+	  If a RadioDNS context has previously resolved its target domain name,
+	  either directly -- through a successful call to
+	  <function>radiodns_resolve_target</function> -- or indirectly, through
+	  a call to another function (such as
+	  <function>radiodns_resolve_app</function>) which automatically invokes
+	  <function>radiodns_resolve_target</function> if needed, then
+	  <function>radiodns_target</function> returns the target domain name
+	  which has been associated with the context.
+	</para>
+	<para>
+	  If <function>radiodns_resolve_target</function> has not yet been invoked,
+	  or previously failed in some catastrophic manner, then this function
+	  returns <constant>NULL</constant>.
+	</para>	  
+  </refsection>
+
+  <refsection>
+	<title>SEE ALSO</title>
+	<simplelist type="inline">
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_domain</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_resolve_target</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_resolve_app</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	</simplelist>
+  </refsection>
+
+</refentry>
+

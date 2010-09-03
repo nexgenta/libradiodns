@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<refentry id="radiodns_domain">
+  <refmeta>
+	<refentrytitle>radiodns_domain</refentrytitle>
+	<manvolnum>3</manvolnum>
+  </refmeta>
+  
+  <refnamediv>
+	<refname>radiodns_domain</refname>
+	<refpurpose>Return the domain name associated with a RadioDNS context</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+	<funcsynopsis>
+	  <funcsynopsisinfo>#include &lt;radiodns.h&gt;, -lradiodns</funcsynopsisinfo>
+	  <funcprototype>
+		<funcdef>const char *<function>radiodns_domain</function></funcdef>
+		<paramdef>radiodns_context_t *<parameter>context</parameter></paramdef>
+	  </funcprototype>
+	</funcsynopsis>
+  </refsynopsisdiv>
+  
+  <refsection>
+	<title>DESCRIPTION</title>
+	<para>
+	  <function>radiodns_domain</function> returns the domain name
+	  associated with a RadioDNS context. If the context was created with
+	  the <function>radiodns_create</function> specifically, this will be
+	  the same domain name specified as the value of the
+	  <parameter>dnsdomain</parameter> parameter in that function call.
+	</para>
+	<para>
+	  For contexts created using other functions in the same
+	  family, <function>radiodns_domain</function> returns the domain
+	  name constructed using the supplied parameters.
+	</para>
+  </refsection>
+
+  <refsection>
+	<title>SEE ALSO</title>
+	<simplelist type="inline">
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_create</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_target</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	</simplelist>
+  </refsection>
+
+</refentry>
