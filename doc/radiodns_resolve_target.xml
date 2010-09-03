@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<refentry id="radiodns_resolve_target">
+  <refmeta>
+	<refentrytitle>radiodns_resolve_target</refentrytitle>
+	<manvolnum>3</manvolnum>
+  </refmeta>
+  
+  <refnamediv>
+	<refname>radiodns_resolve_target</refname>
+	<refpurpose>Attempt to resolve the target domain name of a RadioDNS context</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+	<funcsynopsis>
+	  <funcsynopsisinfo>#include &lt;radiodns.h&gt;, -lradiodns</funcsynopsisinfo>
+	  <funcprototype>
+		<funcdef>const char *<function>radiodns_resolve_target</function></funcdef>
+		<paramdef>radiodns_context_t *<parameter>context</parameter></paramdef>
+	  </funcprototype>
+	</funcsynopsis>
+  </refsynopsisdiv>
+  
+  <refsection>
+	<title>DESCRIPTION</title>
+	<para>
+	  <function>radiodns_resolve_target</function> attempts to resolve the
+	  target domain name of a RadioDNS context. It achieves this by
+	  performing an <constant>ANY</constant> DNS query against the
+	  the context's domain name (as returned by
+	  <function>radiodns_domain</function>) and looking for
+	  <constant>CNAME</constant> or <constant>DNAME</constant> records
+	  which are present in the response.
+	</para>
+	<para>
+	  <function>radiodns_resolve_target</function> performs this process
+	  iteratively, so as to follow any chains of <constant>CNAME</constant>
+	  or <constant>DNAME</constant> records which might be present in DNS.
+	</para>
+	<para>
+	  Once a domain name is established which is not itself an alias of
+	  some sort, this name is set as the target domain name of the context.
+	  In the event that source domain name for the context is itself not
+	  an alias, then the target domain name is set to be the same as
+	  the source domain name.
+	</para>
+	<para>
+	  Once this function has been successfully called once, applications
+	  may subsequently retrieve the target domain name using
+	  <function>radiodns_target</function>.
+	</para>
+  </refsection>  
+  
+  <refsection>
+	<title>RETURN VALUE</title>
+	<para>
+	  If this function completes successfully, it returns the
+	  context's target domain name, which may in some cases be identical
+	  to the context's source domain name.
+	</para>
+	<para>
+	  In the event of a catastrophic error, such as a memory allocation
+	  failure, <constant>NULL</constant> is returned and both
+	  <varname>h_errno</varname> and <varname>errno</varname> are set
+	  appropriately.
+	</para>
+  </refsection>
+  
+  <refsection>
+	<title>EXAMPLE</title>
+	<para>
+	  Consider the domain name generated (unless the default suffix is
+	  overridden) for the FM radio station broadcasting with RDS on
+	  95.8 MHz, with a programme identifier of 0xc586 and an extended
+	  country code of 0xce1:
+	</para>
+	<para>
+	  09580.c586.ce1.fm.radiodns.org
+	</para>
+	<para>
+	  According to the current RadioDNS specification and procedures,
+	  if registered, this domain name will be a <constant>CNAME</constant>,
+	  for example:
+	</para>
+	<para>
+	  09580.c586.ce1.fm.radiodns.org. IN CNAME rnds.musicradio.com.
+	</para>
+	<para>
+	  Thus, if a RadioDNS context is created with the above parameters,
+	  the domain name returned by <function>radiodns_domain</function>
+	  will be "09580.c586.ce1.fm.radiodns.org", while the domain name
+	  resolved by <function>radiodns_resolve_target</function> will be
+	  "rnds.musicradio.com".
+	</para>
+	<para>
+	  In the event that "rnds.musicradio.com" is itself a
+	  <constant>CNAME</constant>, then 
+	  <function>radiodns_resolve_target</function> will attempt to follow
+	  that alias. This process will be repeated until no more aliases are
+	  found -- up to an implementation-defined iteration limit.
+	</para>
+	<para>
+	  In contrast, if the domain name associated with a context, as
+	  returned by <function>radiodns_domain</function> is not any kind of
+	  alias, then this is the domain name which will be set as the target
+	  domain name by <function>radiodns_resolve_target</function>.
+	</para>
+  </refsection>
+  <refsection>
+	<title>NOTES</title>
+	<para>
+	  <function>radiodns_resolve_target</function> does not distinguish
+	  between an empty response from a resolver and a response which
+	  does not contain any <constant>CNAME</constant> or
+	  <constant>DNAME</constant> records. This is by design.
+	</para>
+	<para>
+	  For example, consider "example.com", which has application records
+	  associated with the domain name "_http._tcp.services.example.com", but
+	  where "services.example.com" is not a subdomain -- instead the
+	  application advertisment is simply placed within the "example.com"
+	  zone file, which is perfectly legal.
+	</para>
+	<para>
+	  If <function>radiodns_create</function> is called specifying a
+	  <parameter>dnsdomain</parameter> of "services.example.com", then
+	  <function>radiodns_resolve_target</function> will discover no
+	  records for this domain name, and will set the target domain to be
+	  the same as the source domain name, allowing application discovery to
+	  be performed against it.
+	</para>
+  </refsection>
+
+  <refsection>
+	<title>CAUTION</title>
+	<para>
+	  <function>radiodns_resolve_target</function> performs network-based
+	  operations, and may take several seconds (and in some cases longer)
+	  to complete. It should never ever be invoked on a user interface
+	  thread in a GUI application, or equivalent.
+	</para>
+  </refsection>
+
+  <refsection>
+	<title>SEE ALSO</title>
+	<simplelist type="inline">
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_create</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_domain</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_resolve_app</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	</simplelist>
+  </refsection>
+
+</refentry>
+
