@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<refentry id="radiodns_destroy">
+  <refmeta>
+	<refentrytitle>radiodns_destroy</refentrytitle>
+	<manvolnum>3</manvolnum>
+  </refmeta>
+  
+  <refnamediv>
+	<refname>radiodns_destroy</refname>
+	<refpurpose>Release resources associated with a RadioDNS context</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+	<funcsynopsis>
+	  <funcsynopsisinfo>#include &lt;libradiodns.h&gt;, -lradiodns</funcsynopsisinfo>
+	  <funcprototype>
+		<funcdef>void <function>radiodns_destroy</function></funcdef>
+		<paramdef>radiodns_context_t *<parameter>context</parameter></paramdef>
+	  </funcprototype>
+	</funcsynopsis>
+  </refsynopsisdiv>
+  
+  <refsection>
+	<title>DESCRIPTION</title>
+	<para>
+	  <function>radiodns_destroy</function> relases resources associated
+	  with a RadioDNS context previously created by one of the
+	  <function>radiodns_create</function> family of functions.
+	  It should be called when the context is no longer required.
+	</para>
+  </refsection>
+
+  <refsection>
+	<title>SEE ALSO</title>
+	<simplelist type="inline">
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_create</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	</simplelist>
+  </refsection>
+
+</refentry>

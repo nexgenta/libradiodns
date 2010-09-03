@@ -14,13 +14,13 @@
 ##  See the License for the specific language governing permissions and
 ##  limitations under the License.
 
-man_MANS = radiodns_create.3
+man_MANS = radiodns_create.3 radiodns_destroy.3
 
 ## Distribute the manpages along with the source to save people needing
 ## docbook2x
 
 EXTRA_DIST = $(man_MANS) \
-	radiodns_create.xml
+	radiodns_create.xml radiodns_destroy.xml
 
 if HAVE_DB2X
 

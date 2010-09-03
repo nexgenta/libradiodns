@@ -7,7 +7,7 @@
   
   <refnamediv>
 	<refname>radiodns_create</refname>
-	<refpurpose>Create a new RadioDNS context for a domain name</refpurpose>
+	<refpurpose>Create a new RadioDNS context</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
