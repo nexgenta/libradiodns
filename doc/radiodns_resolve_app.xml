@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<refentry id="radiodns_resolve_app">
+  <refmeta>
+	<refentrytitle>radiodns_resolve_app</refentrytitle>
+	<manvolnum>3</manvolnum>
+  </refmeta>
+  
+  <refnamediv>
+	<refname>radiodns_resolve_app</refname>
+	<refpurpose>Perform application discovery against a target domain</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+	<funcsynopsis>
+	  <funcsynopsisinfo>#include &lt;radiodns.h&gt;, -lradiodns</funcsynopsisinfo>
+	  <funcprototype>
+		<funcdef>radiodns_app_t *<function>radiodns_resolve_app</function></funcdef>
+		<paramdef>radiodns_context_t *<parameter>context</parameter></paramdef>
+		<paramdef>const char *<parameter>name</parameter></paramdef>
+		<paramdef>const char *<parameter>protocol</parameter></paramdef>
+	  </funcprototype>
+	</funcsynopsis>
+  </refsynopsisdiv>
+  
+  <refsection>
+	<title>DESCRIPTION</title>
+	<para>
+	  <function>radiodns_resolve_app</function> performs application discovery
+	  against a target domain associated with a RadioDNS context. It does
+	  this by querying DNS for records which take the following form:
+	</para>
+	<para>
+	  _&lt;<parameter>name</parameter>&gt;._&lt;<parameter>protocol</parameter>&gt;.&lt;target&gt;
+	</para>
+	<para>
+	  Where &lt;target&gt; is the target domain name associated with the
+	  context. <function>radiodns_resolve_app</function> automatically
+	  invokes <function>radiodns_resolve_target</function> if the context
+	  currently has no target domain name associated with it.
+	</para>
+	<para>
+	  <function>radiodns_resolve_app</function> is able to resolve two
+	  distinct kinds of application advertisment both described below. Both
+	  kinds of advertisement can co-exist for a given application domain
+	  name.
+	</para>
+	<para>
+	  Anonymous advertisements are those where <constant>SRV</constant>
+	  (and optionally <constant>TXT</constant>) records are directly
+	  associated with the application domain name itself. For example,
+	  given a target domain name of "apps.example.org", a
+	  <parameter>name</parameter> of "radiovis" and a
+	  <parameter>protocol</parameter> of "tcp", the following record
+	  might be published in DNS:
+	</para>
+	<para>
+	  _radiovis._tcp.apps.example.org. IN SRV 0 100 61613 vis.example.org.
+	</para>
+	<para>
+	  This record constitutes an anonymous advertisment consisting of a
+	  single service record and no parameters. The
+	  <structfield>name</structfield> member of the returned
+	  <structname>radiodns_app_t</structname> structure relating to this 
+	  application instance will be <constant>NULL</constant>.	  
+	</para>
+	<para>
+	  Named instances, on the other hand, use <constant>PTR</constant>
+	  records in order to advertise multiple, distinct, named instances
+	  of an application. For example, the following records might be
+	  published:
+	</para>
+	<para>
+	  _radiovis._tcp.apps.example.org. IN PTR Test\032RadioVIS\032Service._radiovis._tcp.apps.example.org.
+	</para>
+	<para>
+      Test\032RadioVIS\032Service._radiovis._tcp.apps.example.org. SRV 0 100 61613 vis.example.org.
+	</para>
+	<para>
+	  This advertisment constitutes a named advertisment for an application
+	  instance named "Test RadioVIS Service". In the returned
+	  <structname>radiodns_app_t</structname> structure relating to this
+	  application instance, the <structfield>name</structfield> member
+	  will contain the value "Test RadioVIS Service".
+	</para>
+	<para>
+	  <function>radiodns_resolve_app</function> may return a chain of
+	  <structname>radiodns_app_t</structname> structures, linked by way of
+	  the <structfield>next</structfield> member (with the last entry in
+	  the chain having this member set to <constant>NULL</constant>). Each
+	  entry in the chain relates to a single discovered application
+	  instance. If an anonymous instance was discovered, it will always
+	  be returned as the first entry in the chain.
+	</para>	
+  </refsection>  
+  
+  <refsection>
+	<title>MULTIPLE SERVICE RECORDS</title>
+	<para>
+	  Within each <structname>radiodns_app_t</structname> structure, there
+	  is a member named <structfield>srv</structfield> which is an array of
+	  <structname>radiodns_srv_t</structname> structures, each one
+	  pertaining to a discovered <constant>SRV</constant> record associated
+	  with the application instance.
+	</para>
+	<para>
+	  The number of <constant>SRV</constant> records discovered, and so
+	  the number of entries in the <structfield>srv</structfield> array,
+	  is stored in the <structfield>nsrv</structfield> member of the
+	  <structname>radiodns_app_t</structname> structure.
+	</para>
+  </refsection>
+
+  <refsection>
+	<title>APPLICATION PARAMETERS</title>
+	<para>
+	  Alongside <constant>SRV</constant> records, applications may
+	  advertise parameters through the use of <constant>TXT</constant>
+	  records. Such <constant>TXT</constant> records have the form:
+	</para>
+	<para>
+	  "key=value key=value key=value ..."
+	</para>
+	<para>
+	  Each "key" and "value" are percent-encoded (as per URL parameters),
+	  and one or more spaces separate each pair. Parsing of a
+	  <constant>TXT</constant> record is halted when text is encountered
+	  which does not match this structure.
+	</para>
+	<para>
+	  Each key and value pair is stored as a
+	  <structname>radiodns_kv_t</structname> structure, which is itself
+	  a member of the <structfield>params</structfield> array within the
+	  <structname>radiodns_app_t</structname> structure. The number of
+	  parameters stored (if any) is stored in the
+	  <structfield>nparams</structfield> member of the
+	  <structname>radiodns_app_t</structname> structure.
+	</para>
+	<para>
+	  Parameter names and values are automatically percent-decoded before
+	  storage. The use of parameters is entirely application-defined. Some
+	  applications may use no parameters at all, while others may require
+	  their presence to function correctly.
+	</para>
+  </refsection>
+  
+  <refsection>
+	<title>RETURN VALUE</title>
+
+	<para>
+	  If application instances are discovered, a pointer to the first
+	  entry in a chain of <structname>radiodns_app_t</structname>
+	  structures is returned. When none of the entries in the chain are
+	  required, the head entry should be passed to
+	  <function>radiodns_destroy_app</function> in order to release
+	  resources associated with the chain.
+	</para>
+	
+	<para>
+	  If no application instances are discovered, but otherwise no
+	  errors occur, <constant>NULL</constant> is returned, and both
+	  <varname>h_errno</varname> and <varname>errno</varname> are
+	  set to zero.
+	</para>
+	
+	<para>
+	  In the event of a catastrophic error, such as a memory allocation
+	  failure, <constant>NULL</constant> is returned and both
+	  <varname>h_errno</varname> and <varname>errno</varname> are set
+	  appropriately.
+	</para>
+  </refsection>
+
+  <refsection>
+	<title>CAUTION</title>
+	<para>
+	  <function>radiodns_resolve_app</function> performs network-based
+	  operations, and may take several seconds (and in some cases longer)
+	  to complete. It should never ever be invoked on a user interface
+	  thread in a GUI application, or equivalent.
+	</para>
+  </refsection>
+
+  <refsection>
+	<title>SEE ALSO</title>
+	<simplelist type="inline">
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_destroy_app</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_resolve_target</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_target</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	</simplelist>
+  </refsection>
+
+</refentry>
+
