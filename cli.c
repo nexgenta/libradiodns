@@ -634,7 +634,10 @@ interactive(void)
 			printf("RadioDNS> ");
 		}
 		fflush(stdout);
-		fgets(buf, sizeof(buf), stdin);
+		if(!fgets(buf, sizeof(buf), stdin))
+		{
+			break;
+		}
 		argc = 0;
 		t = buf;
 		while(*t && argc < 16)
