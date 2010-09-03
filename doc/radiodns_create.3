@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH radiodns_create 3 "2 September 2010" "" ""
+.TH radiodns_create 3 "3 September 2010" "" ""
 .SH NAME
 radiodns_create \- Create a new RadioDNS context for a domain name
 .SH SYNOPSIS
@@ -23,6 +23,69 @@ radiodns_create \- Create a new RadioDNS context for a domain name
 \*(T<(const char *\fIdnsdomain\fR);\*(T>
 'in \n(.iu-\nxu
 .ad b
+.PP
+.fi
+.ad l
+\*(T<radiodns_context_t *\fBradiodns_create_dab_xpad\fR\*(T> \kx
+.if (\nx>(\n(.l/2)) .nr x (\n(.l/5)
+'in \n(.iu+\nxu
+\*(T<(unsigned int \fIapptype\fR, unsigned int \fIuatype\fR, unsigned int \fIscids\fR, unsigned long \fIsid\fR, unsigned int \fIeid\fR, unsigned int \fIecc\fR, const char *\fIsuffix\fR);\*(T>
+'in \n(.iu-\nxu
+.ad b
+.PP
+.fi
+.ad l
+\*(T<radiodns_context_t *\fBradiodns_create_dab_sc\fR\*(T> \kx
+.if (\nx>(\n(.l/2)) .nr x (\n(.l/5)
+'in \n(.iu+\nxu
+\*(T<(unsigned int \fIpa\fR, unsigned int \fIscids\fR, unsigned long \fIsid\fR, unsigned int \fIeid\fR, unsigned int \fIecc\fR, const char *\fIsuffix\fR);\*(T>
+'in \n(.iu-\nxu
+.ad b
+.PP
+.fi
+.ad l
+\*(T<radiodns_context_t *\fBradiodns_create_dab\fR\*(T> \kx
+.if (\nx>(\n(.l/2)) .nr x (\n(.l/5)
+'in \n(.iu+\nxu
+\*(T<(unsigned int \fIscids\fR, unsigned long \fIsid\fR, unsigned int \fIeid\fR, unsigned int \fIecc\fR, const char *\fIsuffix\fR);\*(T>
+'in \n(.iu-\nxu
+.ad b
+.PP
+.fi
+.ad l
+\*(T<radiodns_context_t *\fBradiodns_create_drm\fR\*(T> \kx
+.if (\nx>(\n(.l/2)) .nr x (\n(.l/5)
+'in \n(.iu+\nxu
+\*(T<(unsigned long \fIsid\fR, const char *\fIsuffix\fR);\*(T>
+'in \n(.iu-\nxu
+.ad b
+.PP
+.fi
+.ad l
+\*(T<radiodns_context_t *\fBradiodns_create_amss\fR\*(T> \kx
+.if (\nx>(\n(.l/2)) .nr x (\n(.l/5)
+'in \n(.iu+\nxu
+\*(T<(unsigned long \fIsid\fR, const char *\fIsuffix\fR);\*(T>
+'in \n(.iu-\nxu
+.ad b
+.PP
+.fi
+.ad l
+\*(T<radiodns_context_t *\fBradiodns_create_hdradio\fR\*(T> \kx
+.if (\nx>(\n(.l/2)) .nr x (\n(.l/5)
+'in \n(.iu+\nxu
+\*(T<(unsigned long \fItx\fR, unsigned int \fIcc\fR, const char *\fIsuffix\fR);\*(T>
+'in \n(.iu-\nxu
+.ad b
+.PP
+.fi
+.ad l
+\*(T<radiodns_context_t *\fBradiodns_create_dvb\fR\*(T> \kx
+.if (\nx>(\n(.l/2)) .nr x (\n(.l/5)
+'in \n(.iu+\nxu
+\*(T<(unsigned int \fIonid\fR, unsigned int \fItsid\fR, unsigned long \fIsid\fR, unsigned long \fInid\fR, const char *\fIsuffix\fR);\*(T>
+'in \n(.iu-\nxu
+.ad b
 'hy
 .SH DESCRIPTION
 The \*(T<\fBradiodns_create\fR\*(T> family of functions create
@@ -36,7 +99,66 @@ functions in the family, such as
 \*(T<\fBradiodns_create_amss\fR\*(T>, which use the supplied
 parameters to \fIgenerate\fR a domain name.
 .PP
-Once a context has been created, its target domain name can be
+In all of the below functions, the \*(T<suffix\*(T>
+parameter may be NULL in order to use the
+default DNS suffix ("radiodns.org"), or may be a string specifying
+an alternate suffix. The suffix should not contain a leading period.
+.PP
+The \*(T<\fBradiodns_create_dab_xpad\fR\*(T> function creates
+a context for a service using Digital Audio Broadcasting (DAB)
+identified by an X-PAD application type (\*(T<apptype\*(T>)
+and user application type (\*(T<uatype\*(T>), in
+combination with a DAB service component identifier
+(\*(T<scids\*(T>), service identifier
+(\*(T<sid\*(T>), ensemble/multiplex identifier
+(\*(T<eid\*(T>), and extended country code
+(\*(T<ecc\*(T>).
+.PP
+The \*(T<\fBradiodns_create_dab_sc\fR\*(T> function creates
+a context for a service using DAB identified by an Independent
+Service Component packet address (\*(T<pa\*(T>), in
+combination with a DAB service component identifier
+(\*(T<scids\*(T>), service identifier
+(\*(T<sid\*(T>), ensemble/multiplex identifier
+(\*(T<eid\*(T>), and extended country code
+(\*(T<ecc\*(T>).
+.PP
+The \*(T<\fBradiodns_create_dab\fR\*(T> function creates
+a context for a service using DAB but one which is not delivered
+via either X-PAD nor an Independent Service Component, and is
+identified by a DAB service component identifier
+(\*(T<scids\*(T>), service identifier
+(\*(T<sid\*(T>), ensemble/multiplex identifier
+(\*(T<eid\*(T>), and extended country code
+(\*(T<ecc\*(T>).
+.PP
+The \*(T<\fBradiodns_create_drm\fR\*(T> function creates a
+context for a service using Digital Radio Mondiale (DRM) and
+identified by a service identifier (\*(T<sid\*(T>).
+.PP
+The \*(T<\fBradiodns_create_amss\fR\*(T> function creates a
+context for a service using AM Signalling System (AMSS) and
+identified by a service identifier (\*(T<sid\*(T>).
+.PP
+The \*(T<\fBradiodns_create_hdradio\fR\*(T> function creates a
+context for a service using iBiquity Digital Corporation's HD Radio,
+and identified by a transmitter identifier (\*(T<tx\*(T>)
+and a country code (\*(T<cc\*(T>).
+.PP
+The \*(T<\fBradiodns_create_dvb\fR\*(T> function cerates a
+context for a service delivered via Digital Video Broadcasting (DVB)
+and identified by a DVB original_network_id
+(\*(T<onid\*(T>), transport_stream_id
+(\*(T<tsid\*(T>), service_id (\*(T<sid\*(T>)
+and network_id (\*(T<nid\*(T>). Note that the default
+\*(T<suffix\*(T> value used by this function is
+currently "tvdns.net" rather than "radiodns.org".
+.SH "USING A RADIODNS CONTEXT"
+Once a context has been created, its source domain name (the name
+specified in the call to \*(T<\fBradiodns_create\fR\*(T>, or
+the name generated by the other functions in the same family) can
+be retrieved by a call to \*(T<\fBradiodns_domain\fR\*(T>.
+The target domain name can be
 discovered using \*(T<\fBradiodns_resolve_target\fR\*(T>. The
 target domain name is the fully-qualified domain name which, in
 the event of \*(T<dnsdomain\*(T> (or its generated
@@ -53,6 +175,11 @@ itself a CNAME or DNAME,
 then the target domain name for the context would be
 \*(T<bar.example.org\*(T>.
 .PP
+At any time, \*(T<\fBradiodns_target\fR\*(T> can be used to
+retrieve the currently-stored target domain name: if this function
+returns NULL, no target discovery has been
+performed yet.
+.PP
 Application discovery can be performed on a context using
 \*(T<\fBradiodns_resolve_app\fR\*(T>. This function queries
 DNS for specifically-named records which are children of the
@@ -65,3 +192,15 @@ initialized context pointer. On failure, \*(T<NULL\*(T> is
 returned and \*(T<errno\*(T> is set appropriately. The returned
 context should be freed once no longer needed with
 \*(T<\fBradiodns_destroy\fR\*(T>.
+.SH "SEE ALSO"
+\fBradiodns\fR(1)
+.br
+\fBradiodns_destroy\fR(3)
+.br
+\fBradiodns_domain\fR(3)
+.br
+\fBradiodns_target\fR(3)
+.br
+\fBradiodns_resolve_target\fR(3)
+.br
+\fBradiodns_resolve_app\fR(3)
