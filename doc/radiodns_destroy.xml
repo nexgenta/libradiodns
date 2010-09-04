@@ -23,7 +23,7 @@
   <refsection>
 	<title>DESCRIPTION</title>
 	<para>
-	  <function>radiodns_destroy</function> relases resources associated
+	  <function>radiodns_destroy</function> releases resources associated
 	  with a RadioDNS context previously created by one of the
 	  <function>radiodns_create</function> family of functions.
 	  It should be called when the context is no longer required.
