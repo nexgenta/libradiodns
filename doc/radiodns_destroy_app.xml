@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<refentry id="radiodns_destroy_app">
+  <refmeta>
+	<refentrytitle>radiodns_destroy_app</refentrytitle>
+	<manvolnum>3</manvolnum>
+  </refmeta>
+  
+  <refnamediv>
+	<refname>radiodns_destroy_app</refname>
+	<refpurpose>Release resources associated with an application instance list</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+	<funcsynopsis>
+	  <funcsynopsisinfo>#include &lt;radiodns.h&gt;, -lradiodns</funcsynopsisinfo>
+	  <funcprototype>
+		<funcdef>void <function>radiodns_destroy_app</function></funcdef>
+		<paramdef>radiodns_app_t *<parameter>applist</parameter></paramdef>
+	  </funcprototype>
+	</funcsynopsis>
+  </refsynopsisdiv>
+  
+  <refsection>
+	<title>DESCRIPTION</title>
+	<para>
+	  <function>radiodns_destroy</function> releases resources associated
+	  with a list of applications, as returned by
+	  <function>radiodns_resolve_app</function>.
+	</para>
+  </refsection>
+
+  <refsection>
+	<title>CAUTION</title>
+	<para>
+	  Care should be taken to pass the head of the application instance
+	  chain and not a later entry in the chain. Passing entries other
+	  than the head (the entry returned by
+	  <function>radiodns_resolve_app</function>) may result in memory
+	  leaks or crashes.
+	</para>
+  </refsection>
+
+  <refsection>
+	<title>SEE ALSO</title>
+	<simplelist type="inline">
+	  <member>
+		<citerefentry>
+		  <refentrytitle>radiodns_resolve_app</refentrytitle>
+		  <manvolnum>3</manvolnum>
+		</citerefentry>
+	  </member>
+	</simplelist>
+  </refsection>
+
+</refentry>

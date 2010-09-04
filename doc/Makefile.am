@@ -15,14 +15,16 @@
 ##  limitations under the License.
 
 man_MANS = radiodns_create.3 radiodns_destroy.3 radiodns_domain.3 \
-	radiodns_target.3 radiodns_resolve_target.3 radiodns_resolve_app.3
+	radiodns_target.3 radiodns_resolve_target.3 radiodns_resolve_app.3 \
+	radiodns_destroy_app.3
 
 ## Distribute the manpages along with the source to save people needing
 ## docbook2x
 
 EXTRA_DIST = $(man_MANS) \
 	radiodns_create.xml radiodns_destroy.xml radiodns_domain.xml \
-	radiodns_target.xml radiodns_resolve_target.xml radiodns_resolve_app.xml
+	radiodns_target.xml radiodns_resolve_target.xml radiodns_resolve_app.xml \
+	radiodns_destroy_app.xml
 
 if HAVE_DB2X
 
