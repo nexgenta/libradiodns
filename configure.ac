@@ -14,10 +14,11 @@ dnl  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 dnl  See the License for the specific language governing permissions and
 dnl  limitations under the License.
 
-AC_INIT([libradiodns],[master])
+AC_INIT([libradiodns],[trunk])
 AM_INIT_AUTOMAKE([foreign])
-AM_MAINTAINER_MODE
 BUILDTOOLS_INIT
+BUILDTOOLS_DETECT_VERSION
+AM_MAINTAINER_MODE
 
 AC_PROG_CC
 AC_PROG_LIBTOOL
