@@ -20,6 +20,37 @@
 		<paramdef>const char *<parameter>protocol</parameter></paramdef>
 	  </funcprototype>
 	</funcsynopsis>
+	<programlisting>
+
+typedef struct radiodns_app_struct radiodns_app_t;
+typedef struct radiodns_srv_struct radiodns_srv_t;
+typedef struct radiodns_kv_struct radiodns_kv_t;
+
+struct radiodns_kv_struct
+{
+	const char *key;
+	const char *value;
+};
+
+struct radiodns_app_struct
+{
+	radiodns_app_t *next;
+	char *name;
+	radiodns_kv_t *params;
+	int nparams;
+	int nsrv;
+	radiodns_srv_t *srv;
+	/* Private data follows */
+};
+
+struct radiodns_srv_struct
+{
+	int priority;
+	int weight;
+	int port;
+	char *target;
+};	  
+    </programlisting>
   </refsynopsisdiv>
   
   <refsection>
@@ -48,14 +79,14 @@
 	  Anonymous advertisements are those where <constant>SRV</constant>
 	  (and optionally <constant>TXT</constant>) records are directly
 	  associated with the application domain name itself. For example,
-	  given a target domain name of "apps.example.org", a
-	  <parameter>name</parameter> of "radiovis" and a
-	  <parameter>protocol</parameter> of "tcp", the following record
-	  might be published in DNS:
+	  given a target domain name of <literal>apps.example.org</literal>, a
+	  <parameter>name</parameter> of <literal>radiovis</literal> and a
+	  <parameter>protocol</parameter> of <literal>tcp</literal>,
+	  the following record might be published in DNS:
 	</para>
-	<para>
-	  _radiovis._tcp.apps.example.org. IN SRV 0 100 61613 vis.example.org.
-	</para>
+	<programlisting>
+_radiovis._tcp.apps.example.org. IN SRV 0 100 61613 vis.example.org.
+	</programlisting>
 	<para>
 	  This record constitutes an anonymous advertisment consisting of a
 	  single service record and no parameters. The
@@ -69,18 +100,17 @@
 	  of an application. For example, the following records might be
 	  published:
 	</para>
-	<para>
-	  _radiovis._tcp.apps.example.org. IN PTR Test\032RadioVIS\032Service._radiovis._tcp.apps.example.org.
-	</para>
-	<para>
-      Test\032RadioVIS\032Service._radiovis._tcp.apps.example.org. SRV 0 100 61613 vis.example.org.
-	</para>
+	<programlisting>
+_radiovis._tcp.apps.example.org. IN PTR Test\032RadioVIS\032Service._radiovis._tcp.apps.example.org.
+
+Test\032RadioVIS\032Service._radiovis._tcp.apps.example.org. SRV 0 100 61613 vis.example.org.
+	</programlisting>
 	<para>
 	  This advertisment constitutes a named advertisment for an application
-	  instance named "Test RadioVIS Service". In the returned
+	  instance named <literal>Test RadioVIS Service</literal>. In the returned
 	  <structname>radiodns_app_t</structname> structure relating to this
 	  application instance, the <structfield>name</structfield> member
-	  will contain the value "Test RadioVIS Service".
+	  will contain the value <literal>Test RadioVIS Service</literal>.
 	</para>
 	<para>
 	  <function>radiodns_resolve_app</function> may return a chain of
@@ -118,11 +148,12 @@
 	  records. Such <constant>TXT</constant> records have the form:
 	</para>
 	<para>
-	  "key=value key=value key=value ..."
+	  <literal>key=value key=value key=value ...</literal>
 	</para>
 	<para>
-	  Each "key" and "value" are percent-encoded (as per URL parameters),
-	  and one or more spaces separate each pair. Parsing of a
+	  Each <literal>key</literal> and <literal>value</literal> are
+	  percent-encoded (as per URL parameters),
+	  and one or more spaces (ASCII 32) separate each pair. Parsing of a
 	  <constant>TXT</constant> record is halted when text is encountered
 	  which does not match this structure.
 	</para>
