@@ -1,3 +1,8 @@
+/** \file context.c
+ * \headerfile radiodns.h
+ * \package libradiodns
+ */
+
 /*
  * libradiodns: The RadioDNS helper library
  *
@@ -22,6 +27,21 @@
 
 #include "p_radiodns.h"
 
+/** Sanitise a DNS domain name suffix.
+ *
+ * check_suffix() accepts a DNS domain name suffix and ensures that
+ * it's within acceptable size limits, having skipped any leading
+ * dots. The size limits are set such that the length of the longest
+ * possible generated domain name added to the length of the suffix
+ * and including any separating dots must be less than or equal to
+ * the maximum length of a DNS domain name.
+ *
+ * @internal
+ * @param [in] suffix The DNS domain name suffix to sanitize
+ * @returns On success, returns the sanitized suffix (a pointer to the
+ *     start of, or somewhere within, the supplied suffix string). On
+ *     error, errno is set appropriately and NULL is returned.
+ */
 static const char *
 check_suffix(const char *suffix)
 {
@@ -38,7 +58,20 @@ check_suffix(const char *suffix)
 	return suffix;
 }
 
-/* Create a new RadioDNS context using a specified domain name */
+/** Create a new RadioDNS context
+ *
+ * The radiodns_create() family of functions create a new RadioDNS context
+ * which can be used as a handle for performing application discovery.
+ *
+ * The radiodns_create() function in particular creates a context using the
+ * specified DNS domain name, \c domain. This is contrast to the other
+ * functions in the family, such as radiodns_create_amss(), which instead use
+ * the supplied parameters to \em generate a domain name.
+ *
+ * @param [in] domain The DNS domain name to use.
+ * @returns A newly-created RadioDNS context upon success, or NULL if an
+ *     error occurs.
+ */
 radiodns_t *
 radiodns_create(const char *domain)
 {

@@ -1,0 +1,299 @@
+DOXYFILE_ENCODING      = UTF-8
+PROJECT_NAME           = libradiodns
+OUTPUT_DIRECTORY       = .
+CREATE_SUBDIRS         = NO
+OUTPUT_LANGUAGE        = English
+BRIEF_MEMBER_DESC      = YES
+REPEAT_BRIEF           = YES
+ABBREVIATE_BRIEF       =
+ALWAYS_DETAILED_SEC    = NO
+INLINE_INHERITED_MEMB  = YES
+FULL_PATH_NAMES        = NO
+STRIP_FROM_PATH        =
+STRIP_FROM_INC_PATH    =
+SHORT_NAMES            = NO
+JAVADOC_AUTOBRIEF      = YES
+QT_AUTOBRIEF           = NO
+MULTILINE_CPP_IS_BRIEF = YES
+INHERIT_DOCS           = YES
+SEPARATE_MEMBER_PAGES  = YES
+TAB_SIZE               = 4
+ALIASES                =
+OPTIMIZE_OUTPUT_FOR_C  = YES
+OPTIMIZE_OUTPUT_JAVA   = NO
+OPTIMIZE_FOR_FORTRAN   = NO
+OPTIMIZE_OUTPUT_VHDL   = NO
+EXTENSION_MAPPING      =
+BUILTIN_STL_SUPPORT    = NO
+CPP_CLI_SUPPORT        = NO
+SIP_SUPPORT            = NO
+IDL_PROPERTY_SUPPORT   = YES
+DISTRIBUTE_GROUP_DOC   = NO
+SUBGROUPING            = YES
+TYPEDEF_HIDES_STRUCT   = YES
+SYMBOL_CACHE_SIZE      = 0
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_METHODS  = NO
+EXTRACT_ANON_NSPACES   = NO
+HIDE_UNDOC_MEMBERS     = YES
+HIDE_UNDOC_CLASSES     = YES
+HIDE_FRIEND_COMPOUNDS  = NO
+HIDE_IN_BODY_DOCS      = NO
+INTERNAL_DOCS          = NO
+CASE_SENSE_NAMES       = NO
+HIDE_SCOPE_NAMES       = NO
+SHOW_INCLUDE_FILES     = NO
+INLINE_INFO            = YES
+SORT_MEMBER_DOCS       = YES
+SORT_BRIEF_DOCS        = NO
+SORT_MEMBERS_CTORS_1ST = NO
+SORT_GROUP_NAMES       = NO
+SORT_BY_SCOPE_NAME     = NO
+GENERATE_TODOLIST      = NO
+GENERATE_TESTLIST      = NO
+GENERATE_BUGLIST       = NO
+GENERATE_DEPRECATEDLIST= NO
+ENABLED_SECTIONS       =
+MAX_INITIALIZER_LINES  = 30
+SHOW_USED_FILES        = NO
+SHOW_DIRECTORIES       = NO
+SHOW_FILES             = NO
+SHOW_NAMESPACES        = YES
+FILE_VERSION_FILTER    =
+LAYOUT_FILE            =
+QUIET                  = NO
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = NO
+WARN_FORMAT            = "$file:$line: $text"
+WARN_LOGFILE           =
+INPUT                  =
+INPUT_ENCODING         = UTF-8
+FILE_PATTERNS          =
+RECURSIVE              = YES
+EXCLUDE                = buildtools autom4te.cache .git doc
+EXCLUDE_SYMLINKS       = NO
+EXCLUDE_PATTERNS       = cli.c
+EXCLUDE_SYMBOLS        =
+EXAMPLE_PATH           =
+EXAMPLE_PATTERNS       =
+EXAMPLE_RECURSIVE      = NO
+IMAGE_PATH             =
+INPUT_FILTER           =
+FILTER_PATTERNS        =
+FILTER_SOURCE_FILES    = NO
+SOURCE_BROWSER         = NO
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = YES
+REFERENCED_BY_RELATION = NO
+REFERENCES_RELATION    = NO
+REFERENCES_LINK_SOURCE = YES
+USE_HTAGS              = NO
+VERBATIM_HEADERS       = NO
+ALPHABETICAL_INDEX     = YES
+COLS_IN_ALPHA_INDEX    = 5
+IGNORE_PREFIX          =
+
+GENERATE_HTML          = NO
+HTML_OUTPUT            = html
+HTML_FILE_EXTENSION    = .html
+HTML_HEADER            =
+HTML_FOOTER            =
+HTML_STYLESHEET        =
+HTML_ALIGN_MEMBERS     = NO
+HTML_DYNAMIC_SECTIONS  = NO
+
+GENERATE_DOCSET        = NO
+DOCSET_FEEDNAME        = "libradiodns"
+DOCSET_BUNDLE_ID       = com.nexgenta.libradiodns
+
+GENERATE_HTMLHELP      = NO
+CHM_FILE               =
+HHC_LOCATION           =
+GENERATE_CHI           = NO
+CHM_INDEX_ENCODING     =
+BINARY_TOC             = NO
+TOC_EXPAND             = NO
+
+GENERATE_QHP           = NO
+QCH_FILE               =
+QHP_NAMESPACE          =
+QHP_VIRTUAL_FOLDER     = doc
+QHP_CUST_FILTER_NAME   =
+QHP_CUST_FILTER_ATTRS  =
+QHP_SECT_FILTER_ATTRS  =
+QHG_LOCATION           =
+
+DISABLE_INDEX          = NO
+ENUM_VALUES_PER_LINE   = 4
+GENERATE_TREEVIEW      = NO
+USE_INLINE_TREES       = NO
+TREEVIEW_WIDTH         = 250
+FORMULA_FONTSIZE       = 10
+SEARCHENGINE           = NO
+
+GENERATE_LATEX         = NO
+LATEX_OUTPUT           = latex
+LATEX_CMD_NAME         = latex
+MAKEINDEX_CMD_NAME     = makeindex
+COMPACT_LATEX          = NO
+PAPER_TYPE             = a4wide
+EXTRA_PACKAGES         =
+LATEX_HEADER           =
+PDF_HYPERLINKS         = YES
+USE_PDFLATEX           = YES
+LATEX_BATCHMODE        = NO
+LATEX_HIDE_INDICES     = NO
+LATEX_SOURCE_CODE      = NO
+
+GENERATE_RTF           = NO
+RTF_OUTPUT             = rtf
+COMPACT_RTF            = NO
+RTF_HYPERLINKS         = NO
+RTF_STYLESHEET_FILE    =
+RTF_EXTENSIONS_FILE    =
+
+
+GENERATE_MAN           = NO
+MAN_OUTPUT             = man
+MAN_EXTENSION          = .3
+MAN_LINKS              = YES
+
+GENERATE_XML           = YES
+XML_OUTPUT             = doxydocs
+XML_SCHEMA             =
+XML_DTD                =
+XML_PROGRAMLISTING     = NO
+
+GENERATE_AUTOGEN_DEF   = NO
+
+GENERATE_PERLMOD       = NO
+PERLMOD_LATEX          = NO
+PERLMOD_PRETTY         = YES
+PERLMOD_MAKEVAR_PREFIX =
+
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = NO
+EXPAND_ONLY_PREDEF     = NO
+SEARCH_INCLUDES        = YES
+INCLUDE_PATH           =
+INCLUDE_FILE_PATTERNS  =
+PREDEFINED             =
+EXPAND_AS_DEFINED      =
+SKIP_FUNCTION_MACROS   = YES
+TAGFILES               =
+GENERATE_TAGFILE       =
+ALLEXTERNALS           = NO
+EXTERNAL_GROUPS        = YES
+PERL_PATH              = /usr/bin/perl
+
+CLASS_DIAGRAMS         = NO
+MSCGEN_PATH            =
+HIDE_UNDOC_RELATIONS   = YES
+HAVE_DOT               = NO
+DOT_FONTNAME           = FreeSans
+DOT_FONTSIZE           = 10
+DOT_FONTPATH           =
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = YES
+GROUP_GRAPHS           = YES
+UML_LOOK               = NO
+TEMPLATE_RELATIONS     = NO
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+
+# If the CALL_GRAPH and HAVE_DOT options are set to YES then
+# doxygen will generate a call dependency graph for every global function
+# or class method. Note that enabling this option will significantly increase
+# the time of a run. So in most cases it will be better to enable call graphs
+# for selected functions only using the \callgraph command.
+
+CALL_GRAPH             = NO
+
+# If the CALLER_GRAPH and HAVE_DOT tags are set to YES then
+# doxygen will generate a caller dependency graph for every global function
+# or class method. Note that enabling this option will significantly increase
+# the time of a run. So in most cases it will be better to enable caller
+# graphs for selected functions only using the \callergraph command.
+
+CALLER_GRAPH           = NO
+
+# If the GRAPHICAL_HIERARCHY and HAVE_DOT tags are set to YES then doxygen
+# will graphical hierarchy of all classes instead of a textual one.
+
+GRAPHICAL_HIERARCHY    = YES
+
+# If the DIRECTORY_GRAPH, SHOW_DIRECTORIES and HAVE_DOT tags are set to YES
+# then doxygen will show the dependencies a directory has on other directories
+# in a graphical way. The dependency relations are determined by the #include
+# relations between the files in the directories.
+
+DIRECTORY_GRAPH        = YES
+
+# The DOT_IMAGE_FORMAT tag can be used to set the image format of the images
+# generated by dot. Possible values are png, jpg, or gif
+# If left blank png will be used.
+
+DOT_IMAGE_FORMAT       = png
+
+# The tag DOT_PATH can be used to specify the path where the dot tool can be
+# found. If left blank, it is assumed the dot tool can be found in the path.
+
+DOT_PATH               =
+
+# The DOTFILE_DIRS tag can be used to specify one or more directories that
+# contain dot files that are included in the documentation (see the
+# \dotfile command).
+
+DOTFILE_DIRS           =
+
+# The DOT_GRAPH_MAX_NODES tag can be used to set the maximum number of
+# nodes that will be shown in the graph. If the number of nodes in a graph
+# becomes larger than this value, doxygen will truncate the graph, which is
+# visualized by representing a node as a red box. Note that doxygen if the
+# number of direct children of the root node in a graph is already larger than
+# DOT_GRAPH_MAX_NODES then the graph will not be shown at all. Also note
+# that the size of a graph can be further restricted by MAX_DOT_GRAPH_DEPTH.
+
+DOT_GRAPH_MAX_NODES    = 50
+
+# The MAX_DOT_GRAPH_DEPTH tag can be used to set the maximum depth of the
+# graphs generated by dot. A depth value of 3 means that only nodes reachable
+# from the root by following a path via at most 3 edges will be shown. Nodes
+# that lay further from the root node will be omitted. Note that setting this
+# option to 1 or 2 may greatly reduce the computation time needed for large
+# code bases. Also note that the size of a graph can be further restricted by
+# DOT_GRAPH_MAX_NODES. Using a depth of 0 means no depth restriction.
+
+MAX_DOT_GRAPH_DEPTH    = 0
+
+# Set the DOT_TRANSPARENT tag to YES to generate images with a transparent
+# background. This is disabled by default, because dot on Windows does not
+# seem to support this out of the box. Warning: Depending on the platform used,
+# enabling this option may lead to badly anti-aliased labels on the edges of
+# a graph (i.e. they become hard to read).
+
+DOT_TRANSPARENT        = NO
+
+# Set the DOT_MULTI_TARGETS tag to YES allow dot to generate multiple output
+# files in one run (i.e. multiple -o and -T options on the command line). This
+# makes dot run faster, but since only newer versions of dot (>1.8.10)
+# support this, this feature is disabled by default.
+
+DOT_MULTI_TARGETS      = YES
+
+# If the GENERATE_LEGEND tag is set to YES (the default) Doxygen will
+# generate a legend page explaining the meaning of the various boxes and
+# arrows in the dot generated graphs.
+
+GENERATE_LEGEND        = YES
+
+# If the DOT_CLEANUP tag is set to YES (the default) Doxygen will
+# remove the intermediate dot files that are used to generate
+# the various graphs.
+
+DOT_CLEANUP            = YES
